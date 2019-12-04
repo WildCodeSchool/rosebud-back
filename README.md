@@ -1,12 +1,15 @@
-If you want to create database with tables : 
+# Setup
 
-//separer DB & tables
-create:database = docker exec -it mysqldump "rosebud_db -u root -p > /database/database.sql"
+If you use docker, you should first get into the container using `docker exec -it bash` :
 
-//separer data
-create:seeds = docker exec -it mysqldump "rosebud_db -u root -p > /database/seeds.sql"
+## Create database
+```
+mysql -u root -p
+CREATE DATABASE rosebud;
+```
 
-//Stocker des images
+## Create tables
+`mysql rosebud -u root -p < /database/database.sql`
 
-- Créer un fichier public où je stock l'image.svg (fichier .gitignor)
-- Récupérer les informations de l'image dans la table (name, ++)
+## Insert data
+`mysql rosebud -u root -p < /database/seeds.sql`
