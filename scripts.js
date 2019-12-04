@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   console.log("Connected!");
-  connection.query("CREATE DATABASE rosebud", (err, result) => {
+  connection.query(`CREATE DATABASE rosebud ; USE rosebud_db ; `, (err, result) => {
     if (err) throw err;
     console.log("Database created");
   });
