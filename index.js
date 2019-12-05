@@ -16,7 +16,7 @@ app.use(
 app.get(`/api/v1/questionnaires/:id`, (req, res) => {
   const idQuestionnaire = req.params.id;
   connection.query(
-    "SELECT title FROM questions WHERE questionnaire_id = ?",
+    "SELECT * FROM questions WHERE questionnaire_id = ?",
     [idQuestionnaire],
     (err, results) => {
       if (err) {
