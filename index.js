@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 3001;
 const connection = require("./config.js");
 
 const bodyParser = require("body-parser");
@@ -16,7 +16,7 @@ app.use(
 app.get(`/api/v1/questionnaires/:id`, (req, res) => {
   const idQuestionnaire = req.params.id;
   connection.query(
-    "SELECT title FROM questions WHERE questionnaire_id = ?",
+    "SELECT * FROM questions WHERE questionnaire_id = ?",
     [idQuestionnaire],
     (err, results) => {
       if (err) {
