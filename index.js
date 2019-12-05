@@ -29,19 +29,15 @@ app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
   );
 });
 
+// POST PARTICIPATION BY QUESTIONNAIRE ID
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
-  const formData = req.body
-  console.log(req.body)
-  const { answers } = formData;
+  const { answers } = req.body;
   const values = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
-
   connection.query(`INSERT INTO answers (comment, question_id) VALUES ${answers.map(_ => '(?,?)')}`, values, (err, results) => {
     if (err) {
-      // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
       console.log(err);
-      res.status(500).send("Erreur lors de la sauvegarde des réponses");
+      res.status(500).send("Erreur lors de la sauvegarde d'une participation");
     } else {
-      // Si tout s'est bien passé, on envoie un statut "ok".
       res.status(200).send(results);
     }
   });
