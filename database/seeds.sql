@@ -23,6 +23,6 @@ UNLOCK TABLES;
 
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
-INSERT INTO `questions` VALUES (1,'Un film qui vous a emu',1),(2,'Le personnage de cinma que vous aimeriez rencontrer (choisir un gros plan)',1),(3,'Une image de Tom & Jerry qui vous a marque',1),(4,'Le dernier film que vous avez regarde',1),(5,'Un personnage dont vous etes fan',1);
+INSERT INTO `questions` VALUES (1,'Quel film souhaitez vous que les lyceens et apprentis de la Region voient l annee prochaine et pourquoi ?',1),(2,'Quel est le premier jeu video auquel vous avez joue et quel souvenir en avez vous ?',1),(3,'Quel est votre jeu video prefere et pourquoi ?',1),(4,'Le dernier film que vous avez regarde et pourquoi',1),(5,'Quel est votre film prefere et pourquoi ?',1);
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;

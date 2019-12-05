@@ -14,7 +14,7 @@ app.use(
 );
 
 // GET QUESTIONS BY QUESTIONNAIRE ID
-app.get(`/api/v1/questionnaires/:id`, (req, res) => {
+app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
   const idQuestionnaire = req.params.id;
   connection.query(
     "SELECT * FROM questions WHERE questionnaire_id = ?",
@@ -30,35 +30,8 @@ app.get(`/api/v1/questionnaires/:id`, (req, res) => {
 });
 
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
-  const formData = {
-    answers: [
-      {
-        comment: 'Coucou monde!',
-        image: 'demo.jpg',
-        question_id: 1,
-      },
-      {
-        comment: 'Coucou monde2!',
-        image: 'demo2.jpg',
-        question_id: 1,
-      },
-      {
-        comment: 'Coucou monde3!',
-        image: 'demo3.jpg',
-        question_id: 1,
-      },
-      {
-        comment: 'Coucou monde4!',
-        image: 'demo4.jpg',
-        question_id: 1,
-      },
-      {
-        comment: 'Coucou monde5!',
-        image: 'demo5.jpg',
-        question_id: 1,
-      },
-    ],
-  };
+  const formData = req.body
+  console.log(req.body)
   const { answers } = formData;
   const values = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
 
@@ -66,7 +39,7 @@ app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
     if (err) {
       // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
       console.log(err);
-      res.status(500).send("Erreur lors de la sauvegarde d'un film");
+      res.status(500).send("Erreur lors de la sauvegarde des réponses");
     } else {
       // Si tout s'est bien passé, on envoie un statut "ok".
       res.status(200).send(results);
