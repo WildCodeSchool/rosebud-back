@@ -5,41 +5,24 @@ const port = 3000;
 const connection = require("./config.js");
 
 const bodyParser = require("body-parser");
-// Support JSON-encoded bodies
 app.use(bodyParser.json());
-// Support URL-encoded bodies
 app.use(
   bodyParser.urlencoded({
     extended: true
   })
 );
 
-app.get(`/api/v1/questionnaires/`, (req, res) => {
-  connection.query("SELECT * from questionnaires", (err, results) => {
-    if (err) {
-      res.status(500).send("Erreur lors de la récupération des questions");
-    } else {
-      res.json(results);
-    }
-  });
-});
-
+// GET QUESTIONS BY QUESTIONNAIRE ID
 app.get(`/api/v1/questionnaires/:id`, (req, res) => {
-  // récupération des données envoyées
-  const idQuestionnaires = req.params.id;
-  const formData = req.body;
-  // connexion à la base de données, et suppression de l'employé
+  const idQuestionnaire = req.params.id;
   connection.query(
-    "SELECT title FROM questionnaires WHERE id = ?",
-    [idQuestionnaires],
-    err => {
+    "SELECT title FROM questions WHERE questionnaire_id = ?",
+    [idQuestionnaire],
+    (err, results) => {
       if (err) {
-        // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
-        console.log(err);
-        res.status(500).send("Erreur lors de la suppression d'un film");
+        res.status(500).send("Erreur lors de la récupération des questions");
       } else {
-        // Si tout s'est bien passé, on envoie un statut "ok".
-        res.send({ formData });
+        res.json(results);
       }
     }
   );
