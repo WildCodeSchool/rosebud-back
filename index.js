@@ -36,11 +36,32 @@ app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
   connection.query(`INSERT INTO answers (comment, question_id) VALUES ${answers.map(_ => '(?,?)')}`, values, (err, results) => {
     if (err) {
       console.log(err);
-      res.status(500).send("Erreur lors de la sauvegarde d'une participation");
+      res.status(500).send("Erreur lors de la sauvegarde de la participation");
     } else {
       res.status(200).send(results);
     }
   });
+});
+
+// GET ANSWERS BY QUESTIONNAIRE ID
+app.get(`/api/v1/questionnaires/:id/participations`, (req, res) => {
+  const idQuestionnaire = req.params.id;
+
+  connection.query(
+    `SELECT qts.id as questionnaire_id, qs.title as question, a.comment as answer
+    FROM questionnaires AS qts 
+    JOIN questions AS qs ON qs.questionnaire_id=qts.id 
+    JOIN answers AS a ON a.question_id = qs.id
+    WHERE qts.id= ? ORDER BY qs.id;`,
+    [idQuestionnaire],
+    (err, results) => {
+      if (err) {
+        res.status(500).send("Erreur lors de la récupération des participations");
+      } else {
+        res.json(results);
+      }
+    }
+  );
 });
 
 app.listen(port, err => {

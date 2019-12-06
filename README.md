@@ -28,3 +28,10 @@ Or with Docker
 docker cp ./database/seeds.sql <MY_CONTAINER>:/tmp/rosebud/seeds.sql
 docker exec -it mysql bash -c 'mysql -u <MY_USER> -p <MY_DATABASE> < /tmp/rosebud/seeds.sql'
 ```
+## Change data in TABLE
+
+first : `TRUNCATE TABLE answers;` (delete the link from fk_answers_id to delete the row who's linked => question'table)
+then : `select * from questions;`
+
+second : `DELETE FROM answers WHERE id = 1;` (delete one by one, `TRUNCATE TABLE answers;`=> doesn't work)
+
