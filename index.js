@@ -31,9 +31,10 @@ app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
 
 // POST PARTICIPATION BY QUESTIONNAIRE ID
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
-  const { answers } = req.body;
-  const values = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
-  connection.query(`INSERT INTO answers (comment, question_id) VALUES ${answers.map(_ => '(?,?)')}`, values, (err, results) => {
+  const { participant, answers } = req.body;
+  const valuesAnswers = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
+  const valuesParticipant = participant.reduce((acc, curr) => [...acc, curr.firstnam, curr.lastname, curr.city], []);
+  connection.query(`INSERT INTO answers (comment, question_id), participants (firstname, lastname, city) VALUES ${answers.map(_ => '(?,?)')}, ${participant.map(_ => '(?,?)')}`, valuesAnswers, valuesParticipant, (err, results) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erreur lors de la sauvegarde de la participation");
@@ -48,7 +49,7 @@ app.get(`/api/v1/questionnaires/:id/participations`, (req, res) => {
   const idQuestionnaire = req.params.id;
 
   connection.query(
-    `SELECT qts.id as questionnaire_id, qs.title as question, a.comment as answer
+    `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question, a.id AS answer_id, a.comment as answer
     FROM questionnaires AS qts 
     JOIN questions AS qs ON qs.questionnaire_id=qts.id 
     JOIN answers AS a ON a.question_id = qs.id

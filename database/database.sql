@@ -27,7 +27,7 @@ CREATE TABLE `answers` (
   `comment` varchar(100) NOT NULL,
   `question_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_qquestion_id` (`question_id`),
+  KEY `fk_question_id` (`question_id`) FR
   CONSTRAINT `fk_question_id` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
