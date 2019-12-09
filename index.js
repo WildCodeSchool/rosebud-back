@@ -35,7 +35,7 @@ app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
   const { participant, answers } = req.body;
   const valuesAnswers = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
-  connection.query(`INSERT INTO answers (comment, question_id), VALUES ${answers.map(_ => '(?,?)')}; INSERT INTO participants (lastname, city), VALUES ('${participant.lastname}','${participant.city}');`, valuesAnswers, (err, results) => {
+  connection.query(`INSERT INTO participants (lastname, city) VALUES ('${participant.lastname}','${participant.city}');INSERT INTO answers (comment, question_id) VALUES ${answers.map(_ => '(?,?)')};`, valuesAnswers, (err, results) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erreur lors de la sauvegarde de la participation");
