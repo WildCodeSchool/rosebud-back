@@ -5,6 +5,7 @@ const app = express();
 const port = 3001;
 const connection = require("./config.js");
 
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(
@@ -30,11 +31,11 @@ app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
 });
 
 // POST PARTICIPATION BY QUESTIONNAIRE ID
+// POST PARTICIPATION BY QUESTIONNAIRE ID
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
   const { participant, answers } = req.body;
   const valuesAnswers = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
-  const valuesParticipant = participant.reduce((acc, curr) => [...acc, curr.firstnam, curr.lastname, curr.city], []);
-  connection.query(`INSERT INTO answers (comment, question_id), participants (firstname, lastname, city) VALUES ${answers.map(_ => '(?,?)')}, ${participant.map(_ => '(?,?)')}`, valuesAnswers, valuesParticipant, (err, results) => {
+  connection.query(`INSERT INTO answers (comment, question_id), VALUES ${answers.map(_ => '(?,?)')}; INSERT INTO participants (lastname, city), VALUES ('${participant.lastname}','${participant.city}');`, valuesAnswers, (err, results) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erreur lors de la sauvegarde de la participation");
