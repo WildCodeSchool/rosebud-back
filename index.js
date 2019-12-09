@@ -49,8 +49,7 @@ app.get(`/api/v1/questionnaires/:id/participations`, (req, res) => {
   const idQuestionnaire = req.params.id;
 
   connection.query(
-    `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question, a.id AS answer_id, a.comment as answer
-    FROM questionnaires AS qts 
+    `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question, a.id AS answer_id, a.comment as answer    FROM questionnaires AS qts 
     JOIN questions AS qs ON qs.questionnaire_id=qts.id 
     JOIN answers AS a ON a.question_id = qs.id
     WHERE qts.id= ? ORDER BY qs.id;`,
