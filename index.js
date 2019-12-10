@@ -5,7 +5,6 @@ const app = express();
 const port = 3001;
 const connection = require("./config.js");
 
-
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(
@@ -31,16 +30,22 @@ app.get(`/api/v1/questionnaires/:id/questions`, (req, res) => {
 });
 
 // POST PARTICIPATION BY QUESTIONNAIRE ID
-// POST PARTICIPATION BY QUESTIONNAIRE ID
 app.post('/api/v1/questionnaires/:id/participations', (req, res) => {
-  const { participant, answers } = req.body;
-  const valuesAnswers = answers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
-  connection.query(`INSERT INTO participants (lastname, city) VALUES ('${participant.lastname}','${participant.city}');INSERT INTO answers (comment, question_id) VALUES ${answers.map(_ => '(?,?)')};`, valuesAnswers, (err, results) => {
+  const { dataParticipant, dataAnswers } = req.body;
+  const valuesAnswers = dataAnswers.reduce((acc, curr) => [...acc, curr.comment, curr.question_id], []);
+  connection.query(`INSERT INTO answers (comment, question_id) VALUES ${dataAnswers.map(_ => '(?,?)')};`, valuesAnswers, (err, answersResults) => {
     if (err) {
       console.log(err);
       res.status(500).send("Erreur lors de la sauvegarde de la participation");
     } else {
-      res.status(200).send(results);
+      connection.query(`INSERT INTO participants (firstname, lastname, city, status, age, email) VALUES (?,?,?,?,?,?);`, [dataParticipant.firstName, dataParticipant.lastName, dataParticipant.city, dataParticipant.status, dataParticipant.age, dataParticipant.email], (err, participantsResults) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send("Erreur lors de la sauvegarde de la participation");
+        } else {
+          res.status(200).send('OK');
+        }
+      });
     }
   });
 });

@@ -35,3 +35,4 @@ then : `select * from questions;`
 
 second : `DELETE FROM answers WHERE id = 1;` (delete one by one, `TRUNCATE TABLE answers;`=> doesn't work)
 
+
