@@ -1,10 +1,11 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3001;
-const bodyParser = require('body-parser');
-const connection = require('./config.js');
+
+require('./config.js')(app);
 
 app.use(bodyParser.json());
 app.use(
@@ -17,12 +18,13 @@ app.use(
 app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
   const questionnaireId = req.params.id;
   try {
-    const results = await connection.query(
+    const [results] = await app.get('db').query(
       'SELECT * FROM questions WHERE questionnaire_id = ?',
       [questionnaireId],
     );
     return res.json(results);
   } catch (err) {
+    console.error(err);
     return res.status(500).send('Erreur lors de la récupération des questions');
   }
 });
@@ -32,7 +34,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   const { participant, answers } = req.body;
 
   try {
-    await connection.query(
+    await app.get('db').query(
       'INSERT INTO participants (firstname, lastname, city, status, age, email) VALUES (?,?,?,?,?,?);',
       [
         participant.firstName,
@@ -44,7 +46,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
       ],
     );
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res
       .status(500)
       .send('Erreur lors de la sauvegarde de la participation');
@@ -60,19 +62,18 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   );
 
   try {
-    await connection.query(
+    await app.get('db').query(
       `INSERT INTO answers (comment, question_id, participant_id) VALUES ${answers.map(
         () => '(?,?,?)',
       )};`,
       valuesAnswers,
     );
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res
       .status(500)
       .send('Erreur lors de la sauvegarde des réponses');
   }
-
   res.status(200).send('OK');
 });
 
@@ -80,7 +81,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
 app.get('/api/v1/questionnaires/:id/participations', async (req, res) => {
   const idQuestionnaire = req.params.id;
   try {
-    const results = await connection.query(
+    const results = await app.get('db').query(
       `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question, a.comment as answer FROM questionnaires AS qts 
     JOIN questions AS qs ON qs.questionnaire_id=qts.id 
     JOIN answers AS a ON a.question_id = qs.id
@@ -99,5 +100,5 @@ app.listen(port, (err) => {
   if (err) {
     throw new Error('Something bad happened...');
   }
-  console.log(`Server is listening on ${port}`);
+  console.error(`Server is listening on ${port}`);
 });

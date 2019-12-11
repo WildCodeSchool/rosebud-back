@@ -7,4 +7,4 @@ const connection = mysql.createConnection({
   database: process.env.DB_DATABASE,
 });
 
-module.exports = connection;
+module.exports = async (app) => app.set('db', await connection);
