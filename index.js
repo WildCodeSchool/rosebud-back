@@ -52,11 +52,14 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
       .send('Erreur lors de la sauvegarde de la participation');
   }
 
+  const [[TextRow]] = await app.get('db').query('SELECT id as participant_id FROM participants ORDER BY participant_id DESC LIMIT 1;');
+
   const valuesAnswers = answers.reduce(
     (acc, curr) => [
       ...acc,
       curr.comment,
       curr.question_id,
+      TextRow.participant_id.toString(),
     ],
     [],
   );
@@ -64,7 +67,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   try {
     await app.get('db').query(
       `INSERT INTO answers (comment, question_id, participant_id) VALUES ${answers.map(
-        () => '(?,?,?)',
+        (_) => `(?,?,?)`,
       )};`,
       valuesAnswers,
     );
