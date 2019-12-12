@@ -149,7 +149,7 @@ app.post('/upload', (req, res) => {
       console.log('file received');
       console.log(req.file);
 
-      const sql = `INSERT INTO \`file\`(\`name\`, \`type\`, \`path\`) VALUES ('${
+      const sql = `INSERT INTO 'file'('name', 'type', 'path') VALUES ('${
         req.file.filename
       }', '${
         req.file.mimetype
