@@ -110,23 +110,6 @@ app.get('/api/v1/questionnaires/:id/participations', async (req, res) => {
       .send('Erreur lors de la récupération des participations');
   }
 });
-// GET QUESTIONS BY QUESTIONNAIRE ID
-app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
-  const idQuestionnaire = req.params.id;
-  try {
-    const results = await app.get('db').query(
-      `SELECT qts.id AS questionnaire_id, qs.id AS question_id, qs.title AS question FROM questionnaires AS qts 
-    JOIN questions AS qs ON qs.questionnaire_id=qts.id 
-    WHERE qts.id= ? ORDER BY qs.id;`,
-      [idQuestionnaire],
-    );
-    res.json(results);
-  } catch (err) {
-    res
-      .status(500)
-      .send('Erreur lors de la récupération des questions');
-  }
-});
 
 app.listen(port, (err) => {
   if (err) {
