@@ -68,7 +68,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
-INSERT INTO `questions` VALUES (2,'Quel film souhaitez vous que les lyceens et apprentis de la Region voient l\'annee prochaine, et pourquoi ?',1),(3,'Quel est le premier jeu video auquel vous avez joue, et quel souvenir en avez vous ?',1),(4,'Quel est votre jeu video prefere, et pourquoi ?',1),(5,'Quel est votre film prefere, et pourquoi ?',1);
+INSERT INTO `questions` VALUES (2,"Quel film souhaitez vous que les lyceens et apprentis de la Region voient l\'annee prochaine, et pourquoi ?",1),(3,"Quel est le premier jeu video auquel vous avez joue, et quel souvenir en avez vous ?",1),(4,"Quel est votre jeu video prefere, et pourquoi ?",1),(5,"Quel est votre film prefere, et pourquoi ?",1);
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
