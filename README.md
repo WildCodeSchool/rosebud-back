@@ -35,4 +35,7 @@ then : `select * from questions;`
 
 second : `DELETE FROM answers WHERE id = 1;` (delete one by one, `TRUNCATE TABLE answers;`=> doesn't work)
 
+tips (delete CONTRAINT OF FK) : `ALTER TABLE <TABLE> DROP FOREIGN KEY answers_ibfk_1;`
+tips (add FK of exist field) : `ALTER TABLE participants ADD FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id);`
+
 
