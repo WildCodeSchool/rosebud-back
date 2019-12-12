@@ -4,7 +4,7 @@
 
 LOCK TABLES `answers` WRITE;
 /*!40000 ALTER TABLE `answers` DISABLE KEYS */;
-INSERT INTO `answers` VALUES (1,'James Bond, car ce film est palpitant',2,1,'url'),(2,'Sonic, il allait super vite !',3,1,'url'),(3,'Tetris, j\'aime les briques',4,1,'url'),(4,'Shutter Island, j\'adore l\'acteur',5,1,'url');
+INSERT INTO `answers` VALUES (1,"James Bond, car ce film est palpitant",2,1,"url"),(2,"Sonic, il allait super vite !",3,1,"url"),(3,"Tetris, j\'aime les briques",4,1,"url"),(4,"Shutter Island, j\'adore l\'acteur",5,1,"url");
 /*!40000 ALTER TABLE `answers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
