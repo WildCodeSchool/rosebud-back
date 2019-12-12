@@ -32,10 +32,10 @@ app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
 // POST PARTICIPATION BY QUESTIONNAIRE ID
 app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   const { participant, answers } = req.body;
-
+  const idQuestionnaire = req.params.id;
   try {
     await app.get('db').query(
-      'INSERT INTO participants (firstname, lastname, city, status, age, email) VALUES (?,?,?,?,?,?);',
+      'INSERT INTO participants (firstname, lastname, city, status, age, email, questionnaire_id) VALUES (?,?,?,?,?,?,?);',
       [
         participant.firstName,
         participant.lastName,
@@ -43,6 +43,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
         participant.status,
         participant.age,
         participant.email,
+        idQuestionnaire,
       ],
     );
   } catch (err) {
@@ -58,6 +59,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
     (acc, curr) => [
       ...acc,
       curr.comment,
+      'url',
       curr.question_id,
       TextRow.participant_id.toString(),
     ],
@@ -66,8 +68,8 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
 
   try {
     await app.get('db').query(
-      `INSERT INTO answers (comment, question_id, participant_id) VALUES ${answers.map(
-        (_) => '(?,?,?)',
+      `INSERT INTO answers (comment,image_url, question_id, participant_id) VALUES ${answers.map(
+        (_) => '(?,?,?,?)',
       )};`,
       valuesAnswers,
     );
@@ -80,21 +82,27 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   res.status(200).send('OK');
 });
 
-// GET ANSWERS BY QUESTIONNAIRE ID
+// GET PARTICIPANTS & ANSWERS BY QUESTIONNAIRE ID
 app.get('/api/v1/questionnaires/:id/participations', async (req, res) => {
   const idQuestionnaire = req.params.id;
   try {
-    const results = await app.get('db').query(
-      `SELECT pts.firstname as firstname, pts.lastname as lastname, pts.age as age, pts.city as city, pts.status as status, 
-    a.comment as comment, qs.id as id
-    FROM questionnaires qts
-    JOIN questions AS qs ON questionnaire_id=qts.id 
-    JOIN answers AS a ON question_id = qs.id
-    JOIN participants as pts ON a.participant_id=pts.id
-    WHERE qts.id= ? ORDER BY qs.id;`,
+    const [participants] = await app.get('db').query(
+      `SELECT p.id AS participant_id, firstname, lastname, status, age, city, email
+        FROM participants AS p
+        JOIN questionnaires AS qnn ON qnn.id=p.questionnaire_id
+        WHERE qnn.id = ? ORDER BY p.id;`,
       [idQuestionnaire],
     );
-    res.json(results);
+    const [answers] = await app.get('db').query(
+      `SELECT p.id AS participant_id, q.title AS question, comment, image_url
+        FROM answers AS a
+        JOIN questions AS q ON q.id = a.question_id
+        JOIN participants AS p ON p.id=a.participant_id
+        JOIN questionnaires AS qnn ON qnn.id=p.questionnaire_id
+        WHERE qnn.id = ? ORDER BY p.id;`,
+      [idQuestionnaire],
+    );
+    res.json([{ participants, answers }]);
   } catch (err) {
     console.error(err);
     res
@@ -107,7 +115,7 @@ app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
   const idQuestionnaire = req.params.id;
   try {
     const results = await app.get('db').query(
-      `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question FROM questionnaires AS qts 
+      `SELECT qts.id AS questionnaire_id, qs.id AS question_id, qs.title AS question FROM questionnaires AS qts 
     JOIN questions AS qs ON qs.questionnaire_id=qts.id 
     WHERE qts.id= ? ORDER BY qs.id;`,
       [idQuestionnaire],
@@ -116,7 +124,7 @@ app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .send('Erreur lors de la récupération des participations');
+      .send('Erreur lors de la récupération des questions');
   }
 });
 
