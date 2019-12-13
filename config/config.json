@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "password",
+    "database": "database_development_rosebud",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 1
+  },
+  "test": {
+    "username": "root",
+    "password": "password",
+    "database": "database_test",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 1
+  },
+  "production": {
+    "username": "root",
+    "password": "password",
+    "database": "database_production",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 1
+  }
+}
