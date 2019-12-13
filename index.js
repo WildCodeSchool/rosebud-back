@@ -59,7 +59,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
   }
 
   const valuesAnswers = answers.reduce(
-    (acc, curr) => [...acc, curr.comment, curr.question_id],
+    (acc, curr) => [...acc, curr.comment, curr.image_url, curr.question_id],
     [],
   );
 
@@ -67,7 +67,7 @@ app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
     await app
       .get('db')
       .query(
-        `INSERT INTO answers (comment, question_id, participant_id) VALUES ${answers.map(
+        `INSERT INTO answers (comment, image_url, question_id, participant_id) VALUES ${answers.map(
           () => '(?,?,?)',
         )};`,
         valuesAnswers,
@@ -148,14 +148,6 @@ app.post('/upload', (req, res) => {
     } else {
       console.log('file received');
       console.log(req.file);
-
-      const sql = `INSERT INTO 'file'('name', 'type', 'path') VALUES ('${
-        req.file.filename
-      }', '${
-        req.file.mimetype
-      }', '${
-        req.file.path
-      }')`;
       msg = 'Successfully! uploaded';
       res.send({
         msg:
