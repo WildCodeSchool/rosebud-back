@@ -3,7 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const { Question, Participant, Answer } = require('./models');
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'public/uploads/' });
 
 const app = express();
 const port = 3001;
