@@ -26,7 +26,6 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) =>
 
 // POST PARTICIPATION BY QUESTIONNAIRE
 app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(), async (req, res) => {
-  console.log(req.files);
   const {
     firstName, lastName, status, age, city, email, questionsLength,
   } = req.body;
@@ -40,24 +39,23 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
     email,
     QuestionnaireId,
   });
-  const ParticipantId = await Participant.findAll({
-    attributes: ['id'], raw: true, order: [['id', 'DESC']], limit: 1,
-  });
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
+    const { path } = req.files[i];
     const {
-      [`answerComment${i}`]: comment, [`answerImage${i}`]: image, [`questionId${i}`]: QuestionId,
+      [`answerComment${i}`]: comment, [`questionId${i}`]: QuestionId,
     } = req.body;
     answers.push(
       Answer.create({
         comment,
-        image_url: 'url',
-        ParticipantId: ParticipantId[0].id,
+        image_url: path,
+        ParticipantId: participant.dataValues.id,
         QuestionId,
       }),
     );
   }
-  res.status(200).send({ participant, answers });
+  const answersResult = await Promise.all(answers);
+  res.status(200).send({ participant, answersResult });
 });
 
 // GET Questions on WALLPAGE
@@ -65,7 +63,6 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
   const { QuestionnaireId } = req.params;
   const questions = await Question.findAll({ attributes: ['title'], where: { QuestionnaireId } });
   res.send({ questions });
-  console.log(questions);
 });
 
 app.listen(port, (err) => {
