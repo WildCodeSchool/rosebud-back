@@ -35,4 +35,15 @@ then : `select * from questions;`
 
 second : `DELETE FROM answers WHERE id = 1;` (delete one by one, `TRUNCATE TABLE answers;`=> doesn't work)
 
+tips (delete CONTRAINT OF FK) : `ALTER TABLE <TABLE> DROP FOREIGN KEY answers_ibfk_1;`
+tips (add FK of exist field) : `ALTER TABLE participants ADD FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id);`
 
+## Sequelize CLI
+
+Create table (exemple) : `sequelize model:create --attributes "firstname:string lastname:string city:string email:string status:string" --name Participants`
+
+Update DB : `sequelize db:migrate:undo:all`
+
+Synchroniser la BD (CLI) : 
+- `node`
+- `const { sequelize } = require `
