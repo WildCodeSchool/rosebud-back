@@ -20,7 +20,7 @@ app.use(
 app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
   const { QuestionnaireId } = req.params;
   const questions = await Question.findAll({ where: { QuestionnaireId } });
-  res.send({ questions });
+  res.send(questions);
 });
 
 // POST PARTICIPATION BY QUESTIONNAIRE
@@ -56,6 +56,14 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, r
     );
   }
   res.status(200).send({ participant, answers });
+});
+
+// GET Questions on WALLPAGE
+app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
+  const { QuestionnaireId } = req.params;
+  const questions = await Question.findAll({ attributes: ['title'], where: { QuestionnaireId } });
+  res.send({ questions });
+  console.log(questions);
 });
 
 app.listen(port, (err) => {
