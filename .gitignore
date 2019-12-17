@@ -23,5 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+<<<<<<< HEAD
 # uploads
+=======
+#uploads
+>>>>>>> e9e41f1af7fec99702963653a01b31adb7557978
 /public/uploads/

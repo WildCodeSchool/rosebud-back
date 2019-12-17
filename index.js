@@ -1,99 +1,71 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
+const multer = require('multer');
+const { Question, Participant, Answer } = require('./models');
+
+const upload = multer({ dest: 'public/uploads/' });
 
 const app = express();
 const port = 3001;
 
-require('./config.js')(app);
-
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(
-  bodyParser.urlencoded({
+  express.urlencoded({
     extended: true,
   }),
 );
 
-// GET QUESTIONS BY QUESTIONNAIRE ID
-app.get('/api/v1/questionnaires/:id/questions', async (req, res) => {
-  const questionnaireId = req.params.id;
-  try {
-    const [results] = await app.get('db').query(
-      'SELECT * FROM questions WHERE questionnaire_id = ?',
-      [questionnaireId],
-    );
-    return res.json(results);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send('Erreur lors de la récupération des questions');
-  }
+app.use(express.static('public'));
+
+// GET QUESTIONS BY QUESTIONNAIRE
+app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
+  const { QuestionnaireId } = req.params;
+  const questions = await Question.findAll({ where: { QuestionnaireId } });
+  res.send(questions);
 });
 
-// POST PARTICIPATION BY QUESTIONNAIRE ID
-app.post('/api/v1/questionnaires/:id/participations', async (req, res) => {
-  const { participant, answers } = req.body;
-
-  try {
-    await app.get('db').query(
-      'INSERT INTO participants (firstname, lastname, city, status, age, email) VALUES (?,?,?,?,?,?);',
-      [
-        participant.firstName,
-        participant.lastName,
-        participant.city,
-        participant.status,
-        participant.age,
-        participant.email,
-      ],
+// POST PARTICIPATION BY QUESTIONNAIRE
+app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(), async (req, res) => {
+  console.log(req.files);
+  const {
+    firstName, lastName, status, age, city, email, questionsLength,
+  } = req.body;
+  const { QuestionnaireId } = req.params;
+  const participant = await Participant.create({
+    firstName,
+    lastName,
+    status,
+    age,
+    city,
+    email,
+    QuestionnaireId,
+  });
+  const ParticipantId = await Participant.findAll({
+    attributes: ['id'], raw: true, order: [['id', 'DESC']], limit: 1,
+  });
+  const answers = [];
+  for (let i = 0; i < questionsLength; i += 1) {
+    const {
+      [`answerComment${i}`]: comment, [`answerImage${i}`]: image, [`questionId${i}`]: QuestionId,
+    } = req.body;
+    answers.push(
+      Answer.create({
+        comment,
+        image_url: 'url',
+        ParticipantId: ParticipantId[0].id,
+        QuestionId,
+      }),
     );
-  } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .send('Erreur lors de la sauvegarde de la participation');
   }
-
-  const valuesAnswers = answers.reduce(
-    (acc, curr) => [
-      ...acc,
-      curr.comment,
-      curr.question_id,
-    ],
-    [],
-  );
-
-  try {
-    await app.get('db').query(
-      `INSERT INTO answers (comment, question_id, participant_id) VALUES ${answers.map(
-        () => '(?,?,?)',
-      )};`,
-      valuesAnswers,
-    );
-  } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .send('Erreur lors de la sauvegarde des réponses');
-  }
-  res.status(200).send('OK');
+  res.status(200).send({ participant, answers });
 });
 
-// GET ANSWERS BY QUESTIONNAIRE ID
-app.get('/api/v1/questionnaires/:id/participations', async (req, res) => {
-  const idQuestionnaire = req.params.id;
-  try {
-    const results = await app.get('db').query(
-      `SELECT qts.id as questionnaire_id, qs.id as question_id, qs.title as question, a.comment as answer FROM questionnaires AS qts 
-    JOIN questions AS qs ON qs.questionnaire_id=qts.id 
-    JOIN answers AS a ON a.question_id = qs.id
-    WHERE qts.id= ? ORDER BY qs.id;`,
-      [idQuestionnaire],
-    );
-    res.json(results);
-  } catch (err) {
-    res
-      .status(500)
-      .send('Erreur lors de la récupération des participations');
-  }
+// GET Questions on WALLPAGE
+app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
+  const { QuestionnaireId } = req.params;
+  const questions = await Question.findAll({ attributes: ['title'], where: { QuestionnaireId } });
+  res.send({ questions });
+  console.log(questions);
 });
 
 app.listen(port, (err) => {
