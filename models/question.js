@@ -1,10 +1,11 @@
-
 module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define('Question', {
     title: DataTypes.STRING,
-    questionnaireId: DataTypes.INTEGER,
-  }, {});
-  Question.associate = function (models) {
+    QuestionnaireId: DataTypes.INTEGER,
+  }, {
+    timestamps: false,
+  });
+  Question.associate = (models) => {
     // associations can be defined here
     models.Question.belongsTo(models.Questionnaire, {
       foreignKey: {

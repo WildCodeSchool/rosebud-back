@@ -11,17 +11,23 @@ module.exports = {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    description: {
+    description_participate: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    description_consult: {
       allowNull: true,
       type: Sequelize.STRING,
     },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
     },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Questionnaires'),

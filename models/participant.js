@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, DataTypes) => {
   const Participant = sequelize.define('Participant', {
     firstName: DataTypes.STRING,
@@ -7,9 +6,11 @@ module.exports = (sequelize, DataTypes) => {
     age: DataTypes.INTEGER,
     email: DataTypes.STRING,
     status: DataTypes.STRING,
-    questionaireID: DataTypes.INTEGER,
-  }, {});
-  Participant.associate = function (models) {
+    QuestionnaireId: DataTypes.INTEGER,
+  }, {
+    timestamps: false,
+  });
+  Participant.associate = (models) => {
     // associations can be defined here
     models.Participant.belongsTo(models.Questionnaire, {
       foreignKey: {

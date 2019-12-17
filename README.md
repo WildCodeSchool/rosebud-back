@@ -42,4 +42,8 @@ tips (add FK of exist field) : `ALTER TABLE participants ADD FOREIGN KEY (questi
 
 Create table (exemple) : `sequelize model:create --attributes "firstname:string lastname:string city:string email:string status:string" --name Participants`
 
+Update DB : `sequelize db:migrate:undo:all`
 
+Synchroniser la BD (CLI) : 
+- `node`
+- `const { sequelize } = require `

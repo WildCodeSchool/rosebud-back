@@ -15,7 +15,7 @@ module.exports = {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    participantId: {
+    ParticipantId: {
       allowNull: false,
       type: Sequelize.INTEGER,
       references: {
@@ -23,7 +23,7 @@ module.exports = {
         key: 'id',
       },
     },
-    questionId: {
+    QuestionId: {
       allowNull: false,
       type: Sequelize.INTEGER,
       references: {
@@ -34,10 +34,16 @@ module.exports = {
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+    },
+    approuvedAt: {
+      allowNull: true,
+      type: Sequelize.DATEONLY,
     },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Answers'),

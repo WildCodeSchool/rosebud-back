@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "password",
-    "database": "database_development_rosebud",
+    "database": "rosebud",
     "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": 1
