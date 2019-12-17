@@ -1,20 +1,21 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
-
+const multer = require('multer');
 const { Question, Participant, Answer } = require('./models');
+
+const upload = multer({ dest: 'uploads/' });
 
 const app = express();
 const port = 3001;
 
-require('./config.js')(app);
-
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(
-  bodyParser.urlencoded({
+  express.urlencoded({
     extended: true,
   }),
 );
+
+app.use(express.static('public'));
 
 // GET QUESTIONS BY QUESTIONNAIRE
 app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
@@ -24,7 +25,8 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) =>
 });
 
 // POST PARTICIPATION BY QUESTIONNAIRE
-app.post('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
+app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(), async (req, res) => {
+  console.log(req.files);
   const {
     firstName, lastName, status, age, city, email, questionsLength,
   } = req.body;
@@ -49,7 +51,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, r
     answers.push(
       Answer.create({
         comment,
-        image_url: image,
+        image_url: 'url',
         ParticipantId: ParticipantId[0].id,
         QuestionId,
       }),
