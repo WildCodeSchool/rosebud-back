@@ -40,7 +40,6 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
     email,
     QuestionnaireId,
   });
-  console.log(req.files);
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
     const path = req.files[i];
@@ -50,7 +49,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
     answers.push(
       Answer.create({
         comment,
-        image_url: path,
+        image_url: path.path,
         ParticipantId: participant.dataValues.id,
         QuestionId,
       }),
