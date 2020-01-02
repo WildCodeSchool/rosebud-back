@@ -1,4 +1,5 @@
 require('dotenv').config();
+const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
 const { Question, Participant, Answer } = require('./models');
@@ -62,8 +63,19 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
 // GET Questions on WALLPAGE
 app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
-  const questions = await Question.findAll({ attributes: ['title'], where: { QuestionnaireId } });
-  res.send({ questions });
+  const { Op } = Sequelize;
+  const questions = await Question.findAll({ where: { QuestionnaireId } });
+  const answers = await Answer.findAll({
+    where:
+    {
+      QuestionId: {
+        [Op.between]: [questions[0].dataValues.id, questions[questions.length - 1].dataValues.id],
+      },
+    },
+  });
+  const participants = await Participant.findAll({ where: { QuestionnaireId } });
+
+  res.send({ questions, answers, participants });
 });
 
 app.listen(port, (err) => {
