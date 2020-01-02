@@ -2,6 +2,7 @@ require('dotenv').config();
 const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
+const Sequelize = require('sequelize');
 const { Question, Participant, Answer } = require('./models');
 
 const upload = multer({ dest: 'public/uploads/' });
@@ -40,9 +41,10 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
     email,
     QuestionnaireId,
   });
+  console.log(req.files);
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
-    const { path } = req.files[i];
+    const path = req.files[i];
     const {
       [`answerComment${i}`]: comment, [`questionId${i}`]: QuestionId,
     } = req.body;
@@ -64,9 +66,22 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
   const { QuestionnaireId } = req.params;
   const { Op } = Sequelize;
   const questions = await Question.findAll({ attributes: ['id', 'title'], where: { QuestionnaireId } });
+<<<<<<< HEAD
   const answers = await Answer.findAll({ attributes: ['id', 'comment'], where: { QuestionId: { [Op.between]: [1, 4] } } });  
   res.send({ questions, answers });
   console.log(questions)
+=======
+  const answers = await Answer.findAll({
+    attributes: ['id', 'comment'],
+    where:
+    {
+      QuestionId: {
+        [Op.between]: [questions[0].dataValues.id, questions[questions.length - 1].dataValues.id],
+      },
+    },
+  });
+  res.send({ questions, answers });
+>>>>>>> 6bf54e816b6f4b1892dd9dd7f286c5210fd1c2f1
 });
 
 app.listen(port, (err) => {
