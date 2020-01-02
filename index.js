@@ -49,7 +49,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
     answers.push(
       Answer.create({
         comment,
-        image_url: path.path,
+        image_url: path.path.replace('public/', '/'),
         ParticipantId: participant.dataValues.id,
         QuestionId,
       }),
