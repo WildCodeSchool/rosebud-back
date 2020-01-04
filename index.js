@@ -2,7 +2,9 @@ require('dotenv').config();
 const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
-const { Question, Participant, Answer } = require('./models');
+const {
+  Questionnaire, Question, Participant, Answer,
+} = require('./models');
 
 const upload = multer({ dest: 'public/uploads/' });
 
@@ -17,6 +19,12 @@ app.use(
 );
 
 app.use(express.static('public'));
+
+// GET QUESTIONNAIRES
+app.get('/api/v1/questionnaires', async (req, res) => {
+  const questionnaires = await Questionnaire.findAll();
+  res.send(questionnaires);
+});
 
 // GET QUESTIONS BY QUESTIONNAIRE
 app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
