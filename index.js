@@ -20,6 +20,19 @@ app.use(
 
 app.use(express.static('public'));
 
+// GET RANDOM IMAGES
+app.get('/api/v1/questionnaires/answers', async (req, res) => {
+  const { limit } = req.query;
+  const homeImages = await Answer.findAll({
+    attributes: ['id', 'image_url'],
+    limit: Number(limit),
+    order: [
+      Sequelize.fn('RAND'),
+    ],
+  });
+  res.send(homeImages);
+});
+
 // GET QUESTIONNAIRES
 app.get('/api/v1/questionnaires', async (req, res) => {
   const questionnaires = await Questionnaire.findAll();
