@@ -24,13 +24,31 @@ app.use(express.static('public'));
 app.get('/api/v1/questionnaires/answers', async (req, res) => {
   const { limit } = req.query;
   const homeImages = await Answer.findAll({
-    attributes: ['id', 'image_url'],
-    limit: Number(limit),
+    attributes: ['id', 'image_url', 'ParticipantId'],
+    limit: limit && Number(limit),
     order: [
       Sequelize.fn('RAND'),
     ],
   });
   res.send(homeImages);
+});
+
+// GET PARTICIPANTS COUNTER
+app.get('/api/v1/participantsCounter', async (req, res) => {
+  const participantsCounter = await Participant.count();
+  res.send(String(participantsCounter));
+});
+
+// GET ANSWERS COUNTER
+app.get('/api/v1/answersCounter', async (req, res) => {
+  const answersCounter = await Answer.count();
+  res.send(String(answersCounter));
+});
+
+// GET QUESTIONNAIRES COUNTER
+app.get('/api/v1/questionnairesCounter', async (req, res) => {
+  const questionnairesCounter = await Questionnaire.count();
+  res.send(String(questionnairesCounter));
 });
 
 // GET QUESTIONNAIRES
