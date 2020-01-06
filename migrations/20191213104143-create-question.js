@@ -19,6 +19,11 @@ module.exports = {
         key: 'id',
       },
     },
+    uploadFormat: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
