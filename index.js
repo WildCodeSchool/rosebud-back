@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
 const {
-  Questionnaire, Question, Participant, Answer,
+  Questionnaire, Question, Participant, Answer, Image,
 } = require('./models');
 
 const upload = multer({ dest: 'public/uploads/' });
@@ -56,6 +56,22 @@ app.get('/api/v1/questionnaires', async (req, res) => {
   res.send(questionnaires);
 });
 
+
+// GET QUESTIONNAIRES BY ID
+app.get('/api/v1/questionnaires/:id', async (req, res) => {
+  const { id } = req.params;
+  const questionnaires = await Questionnaire.findAll({ where: { id } });
+  res.send(questionnaires);
+});
+
+
+// GET IMAGES CHECKBOXES
+app.get('/api/v1/questions/:questionId/images', async (req, res) => {
+  const { questionId } = req.params;
+  const images = await Image.findAll({ where: { questionId } });
+  res.send(images);
+});
+
 // GET QUESTIONS BY QUESTIONNAIRE
 app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
   const { QuestionnaireId } = req.params;
@@ -80,14 +96,20 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
   });
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
-    const path = req.files[i];
     const {
-      [`answerComment${i}`]: comment, [`questionId${i}`]: QuestionId,
+      [`answerComment${i}`]: comment,
+      [`answerImageSelect${i}`]: imageSelect,
+      [`questionId${i}`]: QuestionId,
     } = req.body;
+
+    const imageUrl = imageSelect || req.files
+      .find(({ fieldname }) => fieldname === `answerImage${i}`)
+      .path.replace('public/', '/');
+
     answers.push(
       Answer.create({
         comment,
-        image_url: path.path.replace('public/', '/'),
+        image_url: imageUrl,
         ParticipantId: participant.dataValues.id,
         QuestionId,
       }),
@@ -101,6 +123,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
 app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
   const { Op } = Sequelize;
+  const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
   const answers = await Answer.findAll({
     where:
@@ -112,7 +135,9 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
   });
   const participants = await Participant.findAll({ where: { QuestionnaireId } });
 
-  res.send({ questions, answers, participants });
+  res.send({
+    questionnaires, questions, answers, participants,
+  });
 });
 
 app.listen(port, (err) => {
