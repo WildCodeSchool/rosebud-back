@@ -75,7 +75,13 @@ app.get('/api/v1/questions/:questionId/images', async (req, res) => {
 // GET QUESTIONS BY QUESTIONNAIRE
 app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
   const { QuestionnaireId } = req.params;
-  const questions = await Question.findAll({ where: { QuestionnaireId } });
+  const questions = await Question.findAll({
+    where: { QuestionnaireId },
+    order: [['id', 'ASC']],
+    include: [{
+      model: Image,
+    }],
+  });
   res.send(questions);
 });
 
