@@ -141,9 +141,9 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
   });
   const participants = await Participant.findAll({
     where: { QuestionnaireId },
-    order: [['id', 'ASC']],
     include: [{
       model: Answer,
+      order: [{ model: Answer }, 'id', 'ASC'],
     }],
   });
 
