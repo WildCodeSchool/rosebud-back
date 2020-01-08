@@ -116,6 +116,44 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
   res.send({ questions, answers, participants });
 });
 
+// ADMIN
+
+// POST QUESTIONNAIRES
+app.post('/api/v1/questionnaires', async (req, res) =>{
+  const { title, description_participate, description_consult } = req.body;
+  const newQuestionnaire = await Questionnaire.create({
+    title,
+    description_participate,
+    description_consult
+  })
+  res.send(newQuestionnaire)
+});
+
+// EDIT QUESTIONNAIRES
+app.put('/api/v1/questionnaires/:id', async (req, res) => {
+  const { title, description_participate, description_consult } = req.body;
+  await Questionnaire.update({
+    title,
+    description_consult,
+    description_participate
+  }, 
+  {
+    where: {id : req.params.id}
+  })
+  const questionnaire = await Questionnaire.findByPk(req.params.id)
+  res.send(questionnaire)
+});
+
+// DELETE QUESTIONNAIRES
+app.delete('/api/v1/questionnaires/:id' , async (req,res) => {
+  const id = Number(req.params.id);
+  await Questionnaire.destroy({
+    where: {id}
+  })
+  res.send({id})
+});
+
+
 app.listen(port, (err) => {
   if (err) {
     throw new Error('Something bad happened...');
