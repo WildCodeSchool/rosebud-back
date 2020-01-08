@@ -139,7 +139,13 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
       },
     },
   });
-  const participants = await Participant.findAll({ where: { QuestionnaireId } });
+  const participants = await Participant.findAll({
+    where: { QuestionnaireId },
+    order: [['id', 'ASC']],
+    include: [{
+      model: Answer,
+    }],
+  });
 
   res.send({
     questionnaires, questions, answers, participants,
