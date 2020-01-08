@@ -1,8 +1,9 @@
 const Sequelize = require("sequelize");
 const express = require("express");
 const multer = require("multer");
-const jwtUtils = require('./utils/jwt.utils');
+const { isAuthenticated, generateTokenForUser } = require("./utils/jwt.utils");
 const bcrypt = require("bcrypt");
+
 const {
   Questionnaire,
   Question,
@@ -141,8 +142,7 @@ app.get(
 );
 
 // Create Admin's User
-
-app.post("/api/v1/admin/register", async (req, res) => {
+app.post("/api/v1/admin/register", isAuthenticated, async (req, res) => {
   // Params
   const username = req.body.username;
   const email = req.body.email;
@@ -152,7 +152,7 @@ app.post("/api/v1/admin/register", async (req, res) => {
     return res.status(400).json({ error: "missing parameters" });
   }
 
-  User.findOne({
+  await User.findOne({
     attributes: ["email"],
     where: { email: email }
   })
@@ -192,7 +192,7 @@ app.post("/api/v1/admin/login", async (req, res) => {
     return res.status(400).json({ error: "missing parameter" });
   }
 
-  User.findOne({
+  await User.findOne({
     where: { email: email }
   })
     .then(function(userFound) {
@@ -203,8 +203,8 @@ app.post("/api/v1/admin/login", async (req, res) => {
         ) {
           if (resBycrypt) {
             return res.status(200).json({
-              'userId': userFound,
-              token: jwtUtils.generateTokenForUser(userFound)
+              userId: userFound,
+              token: generateTokenForUser(userFound)
             });
           } else {
             return res.status(403).json({ error: "invalid password" });
