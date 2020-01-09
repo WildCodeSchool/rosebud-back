@@ -149,7 +149,7 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
     include: [{
       model: Answer,
     }],
-    order: [[Answer, 'QuestionId', 'ASC'], ['id', 'desc']],
+    order: [[Answer, 'QuestionId', 'ASC'], ['createdAt', 'desc']],
   });
 
   res.send({
