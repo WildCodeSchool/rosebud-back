@@ -52,11 +52,14 @@ app.get('/api/v1/questionnairesCounter', async (req, res) => {
 
 // GET QUESTIONNAIRES
 app.get('/api/v1/questionnaires', async (req, res) => {
-  const { query } = req.query;
+  const { query, page } = req.query;
   const questionnaires = await Questionnaire.findAll({
     where: {
       title: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${query}%`),
     },
+    offset: Number(page),
+    limit: 3,
+    subQuery: false,
   });
   res.send(questionnaires);
 });
