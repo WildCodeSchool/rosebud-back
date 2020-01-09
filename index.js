@@ -130,7 +130,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
   res.status(200).send({ participant, answersResult });
 });
 
-// GET Questions on WALLPAGE
+// GET Questions & Answers on WALLPAGE
 app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
   const { Op } = Sequelize;
@@ -148,8 +148,8 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
     where: { QuestionnaireId },
     include: [{
       model: Answer,
-      order: [{ model: Answer }, 'id', 'ASC'],
     }],
+    order: [[Answer, 'QuestionId', 'ASC']],
   });
 
   res.send({
