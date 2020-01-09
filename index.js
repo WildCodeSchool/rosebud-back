@@ -133,6 +133,7 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
 // GET Questions & Answers on WALLPAGE
 app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
+  const { status, city } = req.query;
   const { Op } = Sequelize;
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
@@ -145,7 +146,11 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
     },
   });
   const participants = await Participant.findAll({
-    where: { QuestionnaireId },
+    where: {
+      QuestionnaireId,
+      ...status && { status },
+      ...city && { city: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('city')), 'LIKE', `%${city}%`) },
+    },
     include: [{
       model: Answer,
     }],
