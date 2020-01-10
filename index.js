@@ -3,6 +3,7 @@ const express = require("express");
 const multer = require("multer");
 const { isAuthenticated, generateTokenForUser } = require("./utils/jwt.utils");
 const bcrypt = require("bcrypt");
+const cors = require('cors')
 
 const {
   Questionnaire,
@@ -18,11 +19,13 @@ const app = express();
 const port = 3001;
 
 app.use(express.json());
+app.use(cors());
 app.use(
   express.urlencoded({
     extended: true
   })
 );
+
 
 app.use(express.static("public"));
 
@@ -55,10 +58,42 @@ app.get("/api/v1/questionnairesCounter", async (req, res) => {
   res.send(String(questionnairesCounter));
 });
 
-// GET QUESTIONNAIRES
-app.get("/api/v1/questionnaires", async (req, res) => {
-  const questionnaires = await Questionnaire.findAll();
-  res.send(questionnaires);
+// GET ALL QUESTIONNAIRE
+app.get('/api/v1/questionnaires', async (req, res) => {
+    const { count, rows } = await Questionnaire.findAndCountAll()
+    const questionnaire  = await Questionnaire.findAll();
+
+    res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+    res.header('X-Total-Count', count);
+    res.send(questionnaire)
+    //res.json(rows);
+})
+
+// GET QUESTIONNAIRE BY ID
+app.get(
+  "/api/v1/questionnaires/:id",
+  async (req, res) => {
+    const { id } = req.params;
+    const questionnaire = await Questionnaire.findAll({ where: { id } });
+    res.send(questionnaire);
+  }
+);
+
+// PUT QUESTIONNAIRE
+app.put('/api/v1/questionnaires/:id', async (req, res) => {
+  const {
+    title, description_participate, description_consult,
+  } = req.body;
+
+  await Questionnaire.update(
+    {
+      title, description_participate, description_consult,
+    },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Questionnaire Updated!' });
+    });
 });
 
 // GET QUESTIONS BY QUESTIONNAIRE
@@ -185,15 +220,15 @@ app.post("/api/v1/admin/register", isAuthenticated, async (req, res) => {
 // Login admin
 app.post("/api/v1/admin/login", async (req, res) => {
   // Params
-  const email = req.body.email;
+  const username = req.body.username;
   const password = req.body.password;
 
-  if (email == null || password == null) {
+  if (username == null || password == null) {
     return res.status(400).json({ error: "missing parameter" });
   }
 
   await User.findOne({
-    where: { email: email }
+    where: { username: username }
   })
     .then(function(userFound) {
       if (userFound) {
