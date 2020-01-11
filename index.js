@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
 const {
-  Questionnaire, Question, Participant, Answer, Image,
+  Questionnaire, Question, Participant, Answer, Image, sequelize,
 } = require('./models');
 
 const upload = multer({ dest: 'public/uploads/' });
@@ -133,32 +133,47 @@ app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(),
 // GET Questions & Answers on WALLPAGE
 app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
-  const { status, city } = req.query;
-  const { Op } = Sequelize;
+  const {
+    status, city, name, limit, offset,
+  } = req.query;
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
-  const answers = await Answer.findAll({
-    where:
-    {
-      QuestionId: {
-        [Op.between]: [questions[0].dataValues.id, questions[questions.length - 1].dataValues.id],
-      },
-    },
-  });
-  const participants = await Participant.findAll({
-    where: {
-      QuestionnaireId,
-      ...status && { status },
-      ...city && { city: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('city')), 'LIKE', `%${city}%`) },
-    },
-    include: [{
-      model: Answer,
-    }],
-    order: [[Answer, 'QuestionId', 'ASC'], ['createdAt', 'desc']],
-  });
+
+  const options = {
+    type: sequelize.QueryTypes.SELECT,
+    hasJoin: true,
+    include: [{ model: Answer }],
+  };
+  // eslint-disable-next-line no-underscore-dangle
+  Participant._validateIncludedElements(options);
+  const participants = await sequelize.query(`
+    SELECT 
+      p.*, 
+      a.id AS 'Answers.id',
+      a.ParticipantId AS 'Answers.ParticipantId',
+      a.comment AS 'Answers.comment',
+      a.image_url AS 'Answers.image_url',
+      a.QuestionId AS 'Answers.QuestionId'
+    FROM (
+      SELECT * FROM Participants
+      WHERE
+        QuestionnaireId=${QuestionnaireId}
+         ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
+         ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
+         ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
+      ORDER BY RAND()
+      LIMIT ${limit}
+      OFFSET ${offset}
+    ) AS p 
+    LEFT JOIN Answers AS a
+    ON a.ParticipantId = p.id
+    ORDER BY a.QuestionId ASC;
+  `, options);
+
+  const participantsCount = Participant.count({ where: { QuestionnaireId } });
 
   res.send({
-    questionnaires, questions, answers, participants,
+    questionnaires, questions, participants, participantsCount,
   });
 });
 
