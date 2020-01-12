@@ -38,6 +38,13 @@ app.get('/api/v1/participantsCounter', async (req, res) => {
   res.send(String(participantsCounter));
 });
 
+// GET PARTICIPANTS COUNTER BY QUESTIONNAIRE ID
+app.get('/api/v1/participantsCount/:QuestionnaireId', async (req, res) => {
+  const { QuestionnaireId } = req.params;
+  const participantsCount = await Participant.count({ where: { QuestionnaireId } });
+  res.send(String(participantsCount));
+});
+
 // GET ANSWERS COUNTER
 app.get('/api/v1/answersCounter', async (req, res) => {
   const answersCounter = await Answer.count();
@@ -173,10 +180,8 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
     ORDER BY a.QuestionId ASC;
   `, options);
 
-  const participantsCount = Participant.count({ where: { QuestionnaireId } });
-
   res.send({
-    questionnaires, questions, participants, participantsCount,
+    questionnaires, questions, participants,
   });
 });
 
