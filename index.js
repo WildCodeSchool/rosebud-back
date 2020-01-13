@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize');
 const express = require('express');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+const { isAuthenticated, generateTokenForUser } = require('./utils/jwt.utils');
 const {
-  Questionnaire, Question, Participant, Answer, Image, sequelize,
+  Questionnaire, Question, Participant, Answer, Image, User, sequelize,
 } = require('./models');
 
 const upload = multer({ dest: 'public/uploads/' });
@@ -11,6 +14,7 @@ const app = express();
 const port = 3001;
 
 app.use(express.json());
+app.use(cors());
 app.use(
   express.urlencoded({
     extended: true,
@@ -171,7 +175,6 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
          ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
          ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
          ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
-      ORDER BY RAND()
       LIMIT ${limit}
       OFFSET ${offset}
     ) AS p 
@@ -184,6 +187,89 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
     questionnaires, questions, participants,
   });
 });
+
+// BACK OFFICE
+
+// GET ALL QUESTIONNAIRE
+app.get('/api/back/v1/questionnaires', async (req, res) => {
+  const { count, rows } = await Questionnaire.findAndCountAll();
+  const questionnaire = await Questionnaire.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(questionnaire);
+  // res.json(rows);
+});
+
+// Create Admin's User
+app.post('/api/back/v1/admin/register', isAuthenticated, async (req, res) => {
+  // Params
+  const { username } = req.body;
+  const { email } = req.body;
+  const { password } = req.body;
+
+  if (email == null || username == null || password == null) {
+    return res.status(400).json({ error: 'missing parameters' });
+  }
+
+  await User.findOne({
+    attributes: ['email'],
+    where: { email },
+  })
+    .then((userFound) => {
+      if (!userFound) {
+        bcrypt.hash(password, 5, (err, bcryptedPassword) => {
+          const newUser = User.create({
+            email,
+            username,
+            password: bcryptedPassword,
+          })
+            .then((newUser) => res.status(201).json({
+              userId: newUser.id,
+            }))
+            .catch((err) => res.status(500).json({ error: 'cannot add user' }));
+        });
+      } else {
+        return res.status(409).json({ error: 'user already exist ' });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
+});
+
+// Login admin
+app.post('/api/back/v1/admin/login', async (req, res) => {
+  // Params
+  const { username } = req.body;
+  const { password } = req.body;
+
+  if (username == null || password == null) {
+    return res.status(400).json({ error: 'missing parameter' });
+  }
+
+  await User.findOne({
+    where: { username },
+  })
+    .then((userFound) => {
+      if (userFound) {
+        bcrypt.compare(password, userFound.password, (
+          errBycrypt,
+          resBycrypt,
+        ) => {
+          if (resBycrypt) {
+            return res.status(200).json({
+              userId: userFound,
+              token: generateTokenForUser(userFound),
+            });
+          }
+          return res.status(403).json({ error: 'invalid password' });
+        });
+      } else {
+        return res.status(404).json({ error: 'user not exist in DB' });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
+});
+
+// LISTEN PORT
 
 app.listen(port, (err) => {
   if (err) {

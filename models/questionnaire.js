@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Questionnaire.associate = (models) => {
     // associations can be defined here
-    models.Questionnaire.hasMany(models.Question);
+    models.Questionnaire.hasMany(models.Question, { onDelete: 'CASCADE' });
   };
   return Questionnaire;
 };
