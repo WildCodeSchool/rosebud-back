@@ -281,6 +281,42 @@ app.put('/api/back/v1/questions/:id', async (req, res) => {
     });
 });
 
+// CREATE QUESTION
+app.post('/api/back/v1/questions', async (req, res) => {
+  const {
+    title, QuestionnaireId,
+  } = req.body;
+  const question = await Question.create({
+    title,
+    QuestionnaireId,
+  });
+  res.status(200).send({ question });
+});
+
+// GET ALL IMAGES
+app.get('/api/back/v1/images', async (req, res) => {
+  const { count, rows } = await Image.findAndCountAll();
+  const images = await Image.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(images);
+  // res.json(rows);
+});
+
+// CREATE IMAGE
+app.post('/api/back/v1/images', upload.single('image_url'), async (req, res) => {
+  const {
+    QuestionId, title,
+  } = req.body;
+  const imageUrl = req.file.path.replace('public/', '/');
+  const image = await Image.create({
+    QuestionId,
+    title,
+    image_url: imageUrl,
+  });
+  res.status(200).send({ image });
+});
+
 // Create Admin's User
 app.post('/api/back/v1/admin/register', async (req, res) => {
   // Params
