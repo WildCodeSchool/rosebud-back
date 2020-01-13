@@ -201,7 +201,7 @@ app.get('/api/back/v1/questionnaires', async (req, res) => {
 });
 
 // Create Admin's User
-app.post('/api/back/v1/admin/register', isAuthenticated, async (req, res) => {
+app.post('/api/back/v1/admin/register', async (req, res) => {
   // Params
   const { username } = req.body;
   const { email } = req.body;
