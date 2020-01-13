@@ -247,6 +247,40 @@ app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
+// GET ALL QUESTIONS
+app.get('/api/back/v1/questions', async (req, res) => {
+  const { count, rows } = await Question.findAndCountAll();
+  const questions = await Question.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(questions);
+  // res.json(rows);
+});
+
+// GET QUESTION BY ID
+app.get('/api/back/v1/questions/:id', async (req, res) => {
+  const { id } = req.params;
+  const question = await Question.findAll({ where: { id } });
+  res.send(question);
+});
+
+// PUT QUESTION BY ID
+app.put('/api/back/v1/questions/:id', async (req, res) => {
+  const {
+    title, uploadFormat,
+  } = req.body;
+
+  await Question.update(
+    {
+      title, uploadFormat,
+    },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Question Updated!' });
+    });
+});
+
 // Create Admin's User
 app.post('/api/back/v1/admin/register', async (req, res) => {
   // Params
