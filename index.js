@@ -191,7 +191,7 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
 // BACK OFFICE
 
 // PUT QUESTIONNAIRE
-app.put('/api/v1/questionnaires/:id', async (req, res) => {
+app.put('/api/back/v1/questionnaires/:id', async (req, res) => {
   const {
     title, description_participate, description_consult,
   } = req.body;
@@ -208,7 +208,7 @@ app.put('/api/v1/questionnaires/:id', async (req, res) => {
 });
 
 // CREATE QUESTIONNAIRE
-app.post('/api/v1/questionnaires/', async (req, res) => {
+app.post('/api/back/v1/questionnaires/', async (req, res) => {
   const { title, description_participate, description_consult } = req.body;
   await Questionnaire.create({
     title, description_participate, description_consult,
@@ -221,7 +221,7 @@ app.post('/api/v1/questionnaires/', async (req, res) => {
 
 
 // DELETE QUESTIONNAIRE
-app.delete('/api/v1/questionnaires/:id', async (req, res) => {
+app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
   const { id } = req.params;
   await Questionnaire.destroy({ where: { id } })
     .then(() => {
