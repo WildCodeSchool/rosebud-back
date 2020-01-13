@@ -190,6 +190,23 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
 
 // BACK OFFICE
 
+// GET ALL QUESTIONNAIRE
+app.get('/api/back/v1/questionnaires', async (req, res) => {
+  const { count, rows } = await Questionnaire.findAndCountAll();
+  const questionnaire = await Questionnaire.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(questionnaire);
+  // res.json(rows);
+});
+
+// GET QUESTIONNAIRE BY ID
+app.get('/api/back/v1/questionnaires/:id', async (req, res) => {
+  const { id } = req.params;
+  const questionnaire = await Questionnaire.findAll({ where: { id } });
+  res.send(questionnaire);
+});
+
 // PUT QUESTIONNAIRE
 app.put('/api/back/v1/questionnaires/:id', async (req, res) => {
   const {
@@ -228,16 +245,6 @@ app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
       res.status(200).send(`Questionnaire ${id} correctement supprimé`);
     })
     .catch((err) => res.status(500).json(err));
-});
-
-// GET ALL QUESTIONNAIRE
-app.get('/api/back/v1/questionnaires', async (req, res) => {
-  const { count, rows } = await Questionnaire.findAndCountAll();
-  const questionnaire = await Questionnaire.findAll();
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.header('X-Total-Count', count);
-  res.send(questionnaire);
-  // res.json(rows);
 });
 
 // Create Admin's User
