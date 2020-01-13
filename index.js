@@ -190,6 +190,46 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
 
 // BACK OFFICE
 
+// PUT QUESTIONNAIRE
+app.put('/api/v1/questionnaires/:id', async (req, res) => {
+  const {
+    title, description_participate, description_consult,
+  } = req.body;
+
+  await Questionnaire.update(
+    {
+      title, description_participate, description_consult,
+    },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Questionnaire Updated!' });
+    });
+});
+
+// CREATE QUESTIONNAIRE
+app.post('/api/v1/questionnaires/', async (req, res) => {
+  const { title, description_participate, description_consult } = req.body;
+  await Questionnaire.create({
+    title, description_participate, description_consult,
+  })
+    .then(() => {
+      res.json({ status: 'Questionnaire Created!' });
+    })
+    .catch((err) => res.status(500).json({ error: 'unable to create questionnaire' }));
+});
+
+
+// DELETE QUESTIONNAIRE
+app.delete('/api/v1/questionnaires/:id', async (req, res) => {
+  const { id } = req.params;
+  await Questionnaire.destroy({ where: { id } })
+    .then(() => {
+      res.status(200).send(`Questionnaire ${id} correctement supprimé`);
+    })
+    .catch((err) => res.status(500).json(err));
+});
+
 // GET ALL QUESTIONNAIRE
 app.get('/api/back/v1/questionnaires', async (req, res) => {
   const { count, rows } = await Questionnaire.findAndCountAll();
