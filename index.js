@@ -26,7 +26,6 @@ app.use(
   })
 );
 
-
 app.use(express.static("public"));
 
 // GET RANDOM IMAGES
@@ -62,7 +61,6 @@ app.get("/api/v1/questionnairesCounter", async (req, res) => {
 app.get('/api/v1/questionnaires', async (req, res) => {
     const { count, rows } = await Questionnaire.findAndCountAll()
     const questionnaire  = await Questionnaire.findAll();
-
     res.header('Access-Control-Expose-Headers', 'X-Total-Count');
     res.header('X-Total-Count', count);
     res.send(questionnaire)
@@ -95,6 +93,35 @@ app.put('/api/v1/questionnaires/:id', async (req, res) => {
       res.json({ status: 'Questionnaire Updated!' });
     });
 });
+
+// CREATE QUESTIONNAIRE
+app.post('/api/v1/questionnaires/', async (req,res) => {
+  const { title , description_participate, description_consult} = req.body;
+  await Questionnaire.create({
+    title, description_participate, description_consult
+  })
+  .then(() => {
+    res.json({ status: 'Questionnaire Created!' });
+  })
+  .catch(function(err) {
+    return res.status(500).json({ error: "unable to create questionnaire" });
+  });
+})
+
+
+
+// DELETE QUESTIONNAIRE 
+app.delete('/api/v1/questionnaires/:id', async (req, res) => {
+  const { id } = req.params;
+  await Questionnaire.destroy({ where: { id } })
+  .then(() => {
+    res.status(200).send(`Questionnaire ${id} correctement supprimé`);
+  })
+  .catch(function(err) {
+    return res.status(500).json(err);
+  });
+});
+
 
 // GET QUESTIONS BY QUESTIONNAIRE
 app.get(
