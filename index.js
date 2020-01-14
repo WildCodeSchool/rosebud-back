@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-const { isAuthenticated, generateTokenForUser } = require('./utils/jwt.utils');
+const { generateTokenForUser } = require('./utils/jwt.utils');
 const {
   User,
 } = require('./models');

@@ -1,10 +1,11 @@
 const express = require('express');
 const { Question } = require('../../models');
+const { isAuthenticated } = require('../../utils/jwt.utils');
 
 const router = express.Router();
 
 // GET ALL QUESTIONS
-router.get('/', async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   const { count } = await Question.findAndCountAll();
   const questions = await Question.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
@@ -13,14 +14,14 @@ router.get('/', async (req, res) => {
 });
 
 // GET QUESTION BY ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const question = await Question.findAll({ where: { id } });
   res.send(question);
 });
 
 // CREATE QUESTION
-router.post('/', async (req, res) => {
+router.post('/', isAuthenticated, async (req, res) => {
   const {
     title, QuestionnaireId,
   } = req.body;
@@ -32,7 +33,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT QUESTION BY ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', isAuthenticated, async (req, res) => {
   const { title, uploadFormat } = req.body;
   await Question.update(
     { title, uploadFormat },

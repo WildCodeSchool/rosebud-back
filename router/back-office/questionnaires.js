@@ -1,10 +1,11 @@
 const express = require('express');
 const { Questionnaire } = require('../../models');
+const { isAuthenticated } = require('../../utils/jwt.utils');
 
 const router = express.Router();
 
 // GET ALL QUESTIONNAIRE
-router.get('/', async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   const { count } = await Questionnaire.findAndCountAll();
   const questionnaire = await Questionnaire.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
@@ -13,14 +14,14 @@ router.get('/', async (req, res) => {
 });
 
 // GET QUESTIONNAIRE BY ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const questionnaire = await Questionnaire.findAll({ where: { id } });
   res.send(questionnaire);
 });
 
 // CREATE QUESTIONNAIRE
-router.post('/', async (req, res) => {
+router.post('/', isAuthenticated, async (req, res) => {
   const {
     title, participationText, presentationText, UserId,
   } = req.body;
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT QUESTIONNAIRE
-router.put('/:id', async (req, res) => {
+router.put('/:id', isAuthenticated, async (req, res) => {
   const {
     title, participationText, presentationText,
   } = req.body;
@@ -51,7 +52,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE QUESTIONNAIRE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   await Questionnaire.destroy({ where: { id } })
     .then(() => {
