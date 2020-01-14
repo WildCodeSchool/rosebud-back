@@ -38,8 +38,22 @@ app.use('/api/v1/questions', require('./router/questions'));
 // STATISTIQUES
 app.use('/api/v1/metrics', require('./router/metrics'));
 
-// BACK OFFICE
-app.use('/api/back/v1/questionnaires', require('./router/users'));
+// BACK OFFIC
+// GET ALL QUESTIONNAIRE
+app.get('/api/back/v1/questionnaires', isAuthenticated, async (req, res) => {
+  const { count } = await Questionnaire.findAndCountAll();
+  const questionnaire = await Questionnaire.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(questionnaire);
+});
+
+// GET QUESTIONNAIRE BY ID
+app.get('/api/back/v1/questionnaires/:id', async (req, res) => {
+  const { id } = req.params;
+  const questionnaire = await Questionnaire.findAll({ where: { id } });
+  res.send(questionnaire);
+});
 
 // CREATE QUESTIONNAIRE
 app.post('/api/back/v1/questionnaires/', async (req, res) => {
