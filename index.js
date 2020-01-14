@@ -1,11 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const multer = require('multer');
 const { isAuthenticated, generateTokenForUser } = require('./utils/jwt.utils');
 const {
-  Questionnaire, User,
+  Questionnaire, User, Question, Image,
 } = require('./models');
 
+
+const upload = multer({ dest: 'public/uploads/' });
 
 const app = express();
 const port = 3001;
