@@ -1,14 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-const multer = require('multer');
 const { isAuthenticated, generateTokenForUser } = require('./utils/jwt.utils');
 const {
-  Questionnaire, User, Question, Image,
+  User,
 } = require('./models');
-
-
-const upload = multer({ dest: 'public/uploads/' });
 
 const app = express();
 const port = 3001;
@@ -38,199 +34,20 @@ app.use('/api/v1/questions', require('./router/questions'));
 // STATISTIQUES
 app.use('/api/v1/metrics', require('./router/metrics'));
 
-// BACK OFFIC
-// GET ALL QUESTIONNAIRE
-app.get('/api/back/v1/questionnaires', isAuthenticated, async (req, res) => {
-  const { count } = await Questionnaire.findAndCountAll();
-  const questionnaire = await Questionnaire.findAll();
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.header('X-Total-Count', count);
-  res.send(questionnaire);
-});
 
-// GET QUESTIONNAIRE BY ID
-app.get('/api/back/v1/questionnaires/:id', async (req, res) => {
-  const { id } = req.params;
-  const questionnaire = await Questionnaire.findAll({ where: { id } });
-  res.send(questionnaire);
-});
+// BACK OFFICE QUESTIONNAIRES
+app.use('/api/back/v1/questionnaires', require('./router/back-office/questionnaires'));
 
-// CREATE QUESTIONNAIRE
-app.post('/api/back/v1/questionnaires/', async (req, res) => {
-  const {
-    title, participationText, presentationText, UserId,
-  } = req.body;
-  await Questionnaire.create({
-    title, participationText, presentationText, UserId,
-  })
-    .then(() => {
-      res.json({ status: 'Questionnaire Created!' });
-    })
-    .catch((err) => res.status(500).json({ error: 'unable to create questionnaire' }));
-});
+// BACK OFFICE QUESTIONS
+app.use('/api/back/v1/questions', require('./router/back-office/questions'));
 
-// PUT QUESTIONNAIRE
-app.put('/api/back/v1/questionnaires/:id', async (req, res) => {
-  const {
-    title, participationText, presentationText,
-  } = req.body;
+// BACK OFFICE IMAGES
+app.use('/api/back/v1/images', require('./router/back-office/images'));
 
-  await Questionnaire.update(
-    {
-      title, participationText, presentationText,
-    },
-    { where: { id: req.params.id } },
-  )
-    .then(() => {
-      res.json({ status: 'Questionnaire Updated!' });
-    });
-});
+// BACK OFFICE USERS
+app.use('/api/back/v1/users', require('./router/back-office/users'));
 
-// DELETE QUESTIONNAIRE
-app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
-  const { id } = req.params;
-  await Questionnaire.destroy({ where: { id } })
-    .then(() => {
-      res.status(200).send(`Questionnaire ${id} correctement supprimé`);
-    })
-    .catch((err) => res.status(500).json(err));
-});
-
-// GET ALL QUESTIONS
-app.get('/api/back/v1/questions', async (req, res) => {
-  const { count } = await Question.findAndCountAll();
-  const questions = await Question.findAll();
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.header('X-Total-Count', count);
-  res.send(questions);
-});
-
-// GET QUESTION BY ID
-app.get('/api/back/v1/questions/:id', async (req, res) => {
-  const { id } = req.params;
-  const question = await Question.findAll({ where: { id } });
-  res.send(question);
-});
-
-// CREATE QUESTION
-app.post('/api/back/v1/questions', async (req, res) => {
-  const {
-    title, QuestionnaireId,
-  } = req.body;
-  const question = await Question.create({
-    title,
-    QuestionnaireId,
-  });
-  res.status(200).send({ question });
-});
-
-// PUT QUESTION BY ID
-app.put('/api/back/v1/questions/:id', async (req, res) => {
-  const { title, uploadFormat } = req.body;
-  await Question.update(
-    { title, uploadFormat },
-    { where: { id: req.params.id } },
-  )
-    .then(() => {
-      res.json({ status: 'Question Updated!' });
-    });
-});
-
-// GET ALL IMAGES
-app.get('/api/back/v1/images', async (req, res) => {
-  const { count } = await Image.findAndCountAll();
-  const images = await Image.findAll();
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.header('X-Total-Count', count);
-  res.send(images);
-});
-
-// GET IMAGE BY ID
-app.get('/api/back/v1/images/:id', async (req, res) => {
-  const { id } = req.params;
-  const image = await Image.findAll({ where: { id } });
-  res.send(image);
-});
-
-// CREATE IMAGE
-app.post('/api/back/v1/images', upload.single('image_url'), async (req, res) => {
-  const {
-    QuestionId, title,
-  } = req.body;
-  const imageUrl = req.file.path.replace('public/', '/');
-  const image = await Image.create({
-    QuestionId,
-    title,
-    image_url: imageUrl,
-  });
-  res.status(200).send({ image });
-});
-
-// PUT IMAGE BY ID
-app.put('/api/back/v1/images/:id', upload.single('image_url'), async (req, res) => {
-  const { QuestionId, title } = req.body;
-  const imageUrl = req.file.path.replace('public/', '/');
-  await Image.update(
-    { QuestionId, title, image_url: imageUrl },
-    { where: { id: req.params.id } },
-  )
-    .then(() => {
-      res.json({ status: 'Image Updated!' });
-    });
-});
-
-// GET ALL USERS
-app.get('/api/back/v1/users', async (req, res) => {
-  const { count } = await User.findAndCountAll();
-  const users = await User.findAll();
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.header('X-Total-Count', count);
-  res.send(users);
-});
-
-// CREATE USER
-app.post('/api/back/v1/users', async (req, res) => {
-  // Params
-  const { username } = req.body;
-  const { email } = req.body;
-  const { password } = req.body;
-
-  if (email == null || username == null || password == null) {
-    return res.status(400).json({ error: 'missing parameters' });
-  }
-
-  await User.findOne({
-    attributes: ['email'],
-    where: { email },
-  })
-    .then((userFound) => {
-      if (!userFound) {
-        bcrypt.hash(password, 5, (err, bcryptedPassword) => {
-          const newUser = User.create({
-            email,
-            username,
-            password: bcryptedPassword,
-          })
-            .then((newUser) => res.status(201).json({
-              userId: newUser.id,
-            }))
-            .catch((err) => res.status(500).json({ error: 'cannot add user' }));
-        });
-      } else {
-        return res.status(409).json({ error: 'user already exist ' });
-      }
-    })
-    .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
-});
-
-// GET USER BY ID
-app.get('/api/back/v1/users/:id', async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findAll({ where: { id } });
-  res.send(user);
-});
-
-// Login admin
+// BACK OFFICE LOGIN
 app.post('/api/back/v1/admin/login', async (req, res) => {
   // Params
   const { username } = req.body;
@@ -265,7 +82,6 @@ app.post('/api/back/v1/admin/login', async (req, res) => {
 });
 
 // LISTEN PORT
-
 app.listen(port, (err) => {
   if (err) {
     throw new Error('Something bad happened...');
