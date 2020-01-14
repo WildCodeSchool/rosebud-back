@@ -40,7 +40,7 @@ app.use('/api/v1/metrics', require('./router/metrics'));
 
 // BACK OFFIC
 // GET ALL QUESTIONNAIRE
-app.get('/api/back/v1/questionnaires', async (req, res) => {
+app.get('/api/back/v1/questionnaires', isAuthenticated, async (req, res) => {
   const { count } = await Questionnaire.findAndCountAll();
   const questionnaire = await Questionnaire.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');

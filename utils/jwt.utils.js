@@ -1,24 +1,23 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 
-const JWT_SIGN_SECRET =
-  "k6e9v2j5r4f3yjbt8ht1fe7htht67fefu82gt6e3fe1ngd2dgrr54eez24fzgr10";
-  
+const JWT_SIGN_SECRET = 'k6e9v2j5r4f3yjbt8ht1fe7htht67fefu82gt6e3fe1ngd2dgrr54eez24fzgr10';
 
-const isAuthenticated = expressJwt({secret: JWT_SIGN_SECRET });
+
+const isAuthenticated = expressJwt({ secret: JWT_SIGN_SECRET });
 
 module.exports = {
-  generateTokenForUser: function(userData) {
+  generateTokenForUser(userData) {
     return jwt.sign(
       {
         userId: userData.id,
-        username: userData.username
+        username: userData.username,
       },
       JWT_SIGN_SECRET,
       {
-        expiresIn: "1h"
-      }
+        expiresIn: '1h',
+      },
     );
   },
-  isAuthenticated 
+  isAuthenticated,
 };
