@@ -1,9 +1,7 @@
 const express = require('express');
-const Sequelize = require('sequelize');
-const sequelize = require('sequelize');
 const multer = require('multer');
 const {
-  Questionnaire, Answer, Image, Question, Participant,
+  Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
 
 const upload = multer({ dest: 'public/uploads/' });
@@ -105,7 +103,6 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
   } = req.query;
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
-
   const options = {
     type: sequelize.QueryTypes.SELECT,
     hasJoin: true,
@@ -114,28 +111,27 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
   // eslint-disable-next-line no-underscore-dangle
   Participant._validateIncludedElements(options);
   const participants = await sequelize.query(`
-        SELECT 
-          p.*, 
-          a.id AS 'Answers.id',
-          a.ParticipantId AS 'Answers.ParticipantId',
-          a.comment AS 'Answers.comment',
-          a.image_url AS 'Answers.image_url',
-          a.QuestionId AS 'Answers.QuestionId'
-        FROM (
-          SELECT * FROM Participants
-          WHERE
-            QuestionnaireId=${QuestionnaireId}
-             ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
-             ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
-             ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
-          LIMIT ${limit}
-          OFFSET ${offset}
-        ) AS p 
-        LEFT JOIN Answers AS a
-        ON a.ParticipantId = p.id
-        ORDER BY a.QuestionId ASC;
-      `, options);
-
+    SELECT 
+      p.*, 
+      a.id AS 'Answers.id',
+      a.ParticipantId AS 'Answers.ParticipantId',
+      a.comment AS 'Answers.comment',
+      a.image_url AS 'Answers.image_url',
+      a.QuestionId AS 'Answers.QuestionId'
+    FROM (
+      SELECT * FROM Participants
+      WHERE
+        QuestionnaireId=${QuestionnaireId}
+         ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
+         ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
+         ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
+      LIMIT ${limit}
+      OFFSET ${offset}
+    ) AS p 
+    LEFT JOIN Answers AS a
+    ON a.ParticipantId = p.id
+    ORDER BY a.QuestionId ASC;
+  `, options);
   res.send({
     questionnaires, questions, participants,
   });

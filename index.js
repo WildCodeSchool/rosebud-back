@@ -1,10 +1,9 @@
-const Sequelize = require('sequelize');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const { isAuthenticated, generateTokenForUser } = require('./utils/jwt.utils');
 const {
-  Questionnaire, Question, Participant, Answer, User, sequelize,
+  Questionnaire, User,
 } = require('./models');
 
 
@@ -33,26 +32,10 @@ app.use('/api/v1/questionnaires', require('./router/questionnaires'));
 // QUESTIONS
 app.use('/api/v1/questions', require('./router/questions'));
 
-// GET PARTICIPANTS COUNTER
-app.get('/api/v1/participantsCounter', async (req, res) => {
-  const participantsCounter = await Participant.count();
-  res.send(String(participantsCounter));
-});
+// STATISTIQUES
+app.use('/api/v1/metrics', require('./router/metrics'));
 
-// GET ANSWERS COUNTER
-app.get('/api/v1/answersCounter', async (req, res) => {
-  const answersCounter = await Answer.count();
-  res.send(String(answersCounter));
-});
-
-// GET QUESTIONNAIRES COUNTER
-app.get('/api/v1/questionnairesCounter', async (req, res) => {
-  const questionnairesCounter = await Questionnaire.count();
-  res.send(String(questionnairesCounter));
-});
-
-// BACK OFFICE
-
+// BACK OFFIC
 // GET ALL QUESTIONNAIRE
 app.get('/api/back/v1/questionnaires', async (req, res) => {
   const { count, rows } = await Questionnaire.findAndCountAll();
