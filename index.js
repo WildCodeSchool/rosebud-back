@@ -206,28 +206,13 @@ app.get('/api/back/v1/questionnaires/:id', async (req, res) => {
   res.send(questionnaire);
 });
 
-// PUT QUESTIONNAIRE
-app.put('/api/back/v1/questionnaires/:id', async (req, res) => {
-  const {
-    title, description_participate, description_consult,
-  } = req.body;
-
-  await Questionnaire.update(
-    {
-      title, description_participate, description_consult,
-    },
-    { where: { id: req.params.id } },
-  )
-    .then(() => {
-      res.json({ status: 'Questionnaire Updated!' });
-    });
-});
-
 // CREATE QUESTIONNAIRE
 app.post('/api/back/v1/questionnaires/', async (req, res) => {
-  const { title, description_participate, description_consult } = req.body;
+  const {
+    title, participationText, presentationText, UserId,
+  } = req.body;
   await Questionnaire.create({
-    title, description_participate, description_consult,
+    title, participationText, presentationText, UserId,
   })
     .then(() => {
       res.json({ status: 'Questionnaire Created!' });
@@ -235,6 +220,22 @@ app.post('/api/back/v1/questionnaires/', async (req, res) => {
     .catch((err) => res.status(500).json({ error: 'unable to create questionnaire' }));
 });
 
+// PUT QUESTIONNAIRE
+app.put('/api/back/v1/questionnaires/:id', async (req, res) => {
+  const {
+    title, participationText, presentationText,
+  } = req.body;
+
+  await Questionnaire.update(
+    {
+      title, participationText, presentationText,
+    },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Questionnaire Updated!' });
+    });
+});
 
 // DELETE QUESTIONNAIRE
 app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
@@ -262,18 +263,6 @@ app.get('/api/back/v1/questions/:id', async (req, res) => {
   res.send(question);
 });
 
-// PUT QUESTION BY ID
-app.put('/api/back/v1/questions/:id', async (req, res) => {
-  const { title, uploadFormat } = req.body;
-  await Question.update(
-    { title, uploadFormat },
-    { where: { id: req.params.id } },
-  )
-    .then(() => {
-      res.json({ status: 'Question Updated!' });
-    });
-});
-
 // CREATE QUESTION
 app.post('/api/back/v1/questions', async (req, res) => {
   const {
@@ -286,6 +275,18 @@ app.post('/api/back/v1/questions', async (req, res) => {
   res.status(200).send({ question });
 });
 
+// PUT QUESTION BY ID
+app.put('/api/back/v1/questions/:id', async (req, res) => {
+  const { title, uploadFormat } = req.body;
+  await Question.update(
+    { title, uploadFormat },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Question Updated!' });
+    });
+});
+
 // GET ALL IMAGES
 app.get('/api/back/v1/images', async (req, res) => {
   const { count } = await Image.findAndCountAll();
@@ -293,6 +294,13 @@ app.get('/api/back/v1/images', async (req, res) => {
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(images);
+});
+
+// GET IMAGE BY ID
+app.get('/api/back/v1/images/:id', async (req, res) => {
+  const { id } = req.params;
+  const image = await Image.findAll({ where: { id } });
+  res.send(image);
 });
 
 // CREATE IMAGE
@@ -309,8 +317,30 @@ app.post('/api/back/v1/images', upload.single('image_url'), async (req, res) => 
   res.status(200).send({ image });
 });
 
-// Create Admin's User
-app.post('/api/back/v1/admin/register', async (req, res) => {
+// PUT IMAGE BY ID
+app.put('/api/back/v1/images/:id', upload.single('image_url'), async (req, res) => {
+  const { QuestionId, title } = req.body;
+  const imageUrl = req.file.path.replace('public/', '/');
+  await Image.update(
+    { QuestionId, title, image_url: imageUrl },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Image Updated!' });
+    });
+});
+
+// GET ALL USERS
+app.get('/api/back/v1/users', async (req, res) => {
+  const { count } = await User.findAndCountAll();
+  const users = await User.findAll();
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('X-Total-Count', count);
+  res.send(users);
+});
+
+// CREATE USER
+app.post('/api/back/v1/users', async (req, res) => {
   // Params
   const { username } = req.body;
   const { email } = req.body;
@@ -342,6 +372,13 @@ app.post('/api/back/v1/admin/register', async (req, res) => {
       }
     })
     .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
+});
+
+// GET USER BY ID
+app.get('/api/back/v1/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findAll({ where: { id } });
+  res.send(user);
 });
 
 // Login admin

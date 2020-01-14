@@ -1,12 +1,17 @@
 module.exports = (sequelize, DataTypes) => {
   const Questionnaire = sequelize.define('Questionnaire', {
     title: DataTypes.STRING,
-    description_participate: DataTypes.STRING,
-    description_consult: DataTypes.STRING,
+    participationText: DataTypes.STRING,
+    presentationText: DataTypes.STRING,
+    UserId: DataTypes.INTEGER,
   }, {});
   Questionnaire.associate = (models) => {
-    // associations can be defined here
     models.Questionnaire.hasMany(models.Question, { onDelete: 'CASCADE' });
+    models.Questionnaire.belongsTo(models.User, {
+      foreignKey: {
+        allowNull: false,
+      },
+    });
   };
   return Questionnaire;
 };
