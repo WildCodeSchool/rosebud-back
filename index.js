@@ -192,12 +192,11 @@ app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, re
 
 // GET ALL QUESTIONNAIRE
 app.get('/api/back/v1/questionnaires', async (req, res) => {
-  const { count, rows } = await Questionnaire.findAndCountAll();
+  const { count } = await Questionnaire.findAndCountAll();
   const questionnaire = await Questionnaire.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(questionnaire);
-  // res.json(rows);
 });
 
 // GET QUESTIONNAIRE BY ID
@@ -249,12 +248,11 @@ app.delete('/api/back/v1/questionnaires/:id', async (req, res) => {
 
 // GET ALL QUESTIONS
 app.get('/api/back/v1/questions', async (req, res) => {
-  const { count, rows } = await Question.findAndCountAll();
+  const { count } = await Question.findAndCountAll();
   const questions = await Question.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(questions);
-  // res.json(rows);
 });
 
 // GET QUESTION BY ID
@@ -266,14 +264,9 @@ app.get('/api/back/v1/questions/:id', async (req, res) => {
 
 // PUT QUESTION BY ID
 app.put('/api/back/v1/questions/:id', async (req, res) => {
-  const {
-    title, uploadFormat,
-  } = req.body;
-
+  const { title, uploadFormat } = req.body;
   await Question.update(
-    {
-      title, uploadFormat,
-    },
+    { title, uploadFormat },
     { where: { id: req.params.id } },
   )
     .then(() => {
@@ -295,12 +288,11 @@ app.post('/api/back/v1/questions', async (req, res) => {
 
 // GET ALL IMAGES
 app.get('/api/back/v1/images', async (req, res) => {
-  const { count, rows } = await Image.findAndCountAll();
+  const { count } = await Image.findAndCountAll();
   const images = await Image.findAll();
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(images);
-  // res.json(rows);
 });
 
 // CREATE IMAGE
