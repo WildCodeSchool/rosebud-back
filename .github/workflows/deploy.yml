@@ -1,0 +1,19 @@
+name: Deploy updates
+
+on:
+  push:
+    branches: master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Deploy
+        run: |
+          sshpass -p ${{secrets.SSH_PASS}} ssh \
+          ${{secrets.SSH_USER }}@${{secrets.SSH_HOST}} \
+          -o StrictHostKeyChecking=no \
+          "bash -s" ./deploy.sh
+
