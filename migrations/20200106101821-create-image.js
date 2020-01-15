@@ -1,28 +1,25 @@
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Questions', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Images', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    title: {
-      allowNull: false,
-      type: Sequelize.STRING,
-    },
-    QuestionnaireId: {
+    QuestionId: {
       allowNull: false,
       type: Sequelize.INTEGER,
       references: {
-        model: 'Questionnaires',
+        model: 'Images',
         key: 'id',
       },
     },
-    uploadFormat: {
-      allowNull: false,
-      type: Sequelize.BOOLEAN,
-      defaultValue: true,
+    title: {
+      type: Sequelize.STRING,
+    },
+    image_url: {
+      type: Sequelize.STRING,
     },
     createdAt: {
       allowNull: false,
@@ -35,5 +32,5 @@ module.exports = {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
     },
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Questions'),
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Images'),
 };

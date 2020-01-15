@@ -1,17 +1,16 @@
-require('dotenv').config();
-const Sequelize = require('sequelize');
 const express = require('express');
-const multer = require('multer');
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+const { generateTokenForUser } = require('./utils/jwt.utils');
 const {
-  Questionnaire, Question, Participant, Answer,
+  User,
 } = require('./models');
-
-const upload = multer({ dest: 'public/uploads/' });
 
 const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use(cors());
 app.use(
   express.urlencoded({
     extended: true,
@@ -20,102 +19,69 @@ app.use(
 
 app.use(express.static('public'));
 
-// GET RANDOM IMAGES
-app.get('/api/v1/questionnaires/answers', async (req, res) => {
-  const { limit } = req.query;
-  const homeImages = await Answer.findAll({
-    attributes: ['id', 'image_url', 'ParticipantId'],
-    limit: limit && Number(limit),
-    order: [
-      Sequelize.fn('RAND'),
-    ],
-  });
-  res.send(homeImages);
-});
+// ANSWERS
+app.use('/api/v1/answers', require('./router/answers'));
 
-// GET PARTICIPANTS COUNTER
-app.get('/api/v1/participantsCounter', async (req, res) => {
-  const participantsCounter = await Participant.count();
-  res.send(String(participantsCounter));
-});
+// PARTICIPANTS
+app.use('/api/v1/participants', require('./router/participants'));
 
-// GET ANSWERS COUNTER
-app.get('/api/v1/answersCounter', async (req, res) => {
-  const answersCounter = await Answer.count();
-  res.send(String(answersCounter));
-});
+// QUESTIONNAIRES
+app.use('/api/v1/questionnaires', require('./router/questionnaires'));
 
-// GET QUESTIONNAIRES COUNTER
-app.get('/api/v1/questionnairesCounter', async (req, res) => {
-  const questionnairesCounter = await Questionnaire.count();
-  res.send(String(questionnairesCounter));
-});
+// QUESTIONS
+app.use('/api/v1/questions', require('./router/questions'));
 
-// GET QUESTIONNAIRES
-app.get('/api/v1/questionnaires', async (req, res) => {
-  const questionnaires = await Questionnaire.findAll();
-  res.send(questionnaires);
-});
+// STATISTIQUES
+app.use('/api/v1/metrics', require('./router/metrics'));
 
-// GET QUESTIONS BY QUESTIONNAIRE
-app.get('/api/v1/questionnaires/:QuestionnaireId/questions', async (req, res) => {
-  const { QuestionnaireId } = req.params;
-  const questions = await Question.findAll({ where: { QuestionnaireId } });
-  res.send(questions);
-});
 
-// POST PARTICIPATION BY QUESTIONNAIRE
-app.post('/api/v1/questionnaires/:QuestionnaireId/participations', upload.any(), async (req, res) => {
-  const {
-    firstName, lastName, status, age, city, email, questionsLength,
-  } = req.body;
-  const { QuestionnaireId } = req.params;
-  const participant = await Participant.create({
-    firstName,
-    lastName,
-    status,
-    age,
-    city,
-    email,
-    QuestionnaireId,
-  });
-  const answers = [];
-  for (let i = 0; i < questionsLength; i += 1) {
-    const path = req.files[i];
-    const {
-      [`answerComment${i}`]: comment, [`questionId${i}`]: QuestionId,
-    } = req.body;
-    answers.push(
-      Answer.create({
-        comment,
-        image_url: path.path.replace('public/', '/'),
-        ParticipantId: participant.dataValues.id,
-        QuestionId,
-      }),
-    );
+// BACK OFFICE QUESTIONNAIRES
+app.use('/api/back/v1/questionnaires', require('./router/back-office/questionnaires'));
+
+// BACK OFFICE QUESTIONS
+app.use('/api/back/v1/questions', require('./router/back-office/questions'));
+
+// BACK OFFICE IMAGES
+app.use('/api/back/v1/images', require('./router/back-office/images'));
+
+// BACK OFFICE USERS
+app.use('/api/back/v1/users', require('./router/back-office/users'));
+
+// BACK OFFICE LOGIN
+app.post('/api/back/v1/admin/login', async (req, res) => {
+  // Params
+  const { username } = req.body;
+  const { password } = req.body;
+
+  if (username == null || password == null) {
+    return res.status(400).json({ error: 'missing parameter' });
   }
-  const answersResult = await Promise.all(answers);
-  res.status(200).send({ participant, answersResult });
+
+  await User.findOne({
+    where: { username },
+  })
+    .then((userFound) => {
+      if (userFound) {
+        bcrypt.compare(password, userFound.password, (
+          errBycrypt,
+          resBycrypt,
+        ) => {
+          if (resBycrypt) {
+            return res.status(200).json({
+              userId: userFound,
+              token: generateTokenForUser(userFound),
+            });
+          }
+          return res.status(403).json({ error: 'invalid password' });
+        });
+      } else {
+        return res.status(404).json({ error: 'user not exist in DB' });
+      }
+    })
+    .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
 });
 
-// GET Questions on WALLPAGE
-app.get('/api/v1/questionnaires/:QuestionnaireId/participations', async (req, res) => {
-  const { QuestionnaireId } = req.params;
-  const { Op } = Sequelize;
-  const questions = await Question.findAll({ where: { QuestionnaireId } });
-  const answers = await Answer.findAll({
-    where:
-    {
-      QuestionId: {
-        [Op.between]: [questions[0].dataValues.id, questions[questions.length - 1].dataValues.id],
-      },
-    },
-  });
-  const participants = await Participant.findAll({ where: { QuestionnaireId } });
-
-  res.send({ questions, answers, participants });
-});
-
+// LISTEN PORT
 app.listen(port, (err) => {
   if (err) {
     throw new Error('Something bad happened...');

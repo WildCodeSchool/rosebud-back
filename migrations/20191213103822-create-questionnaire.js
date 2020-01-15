@@ -11,13 +11,21 @@ module.exports = {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    description_participate: {
+    participationText: {
       allowNull: true,
       type: Sequelize.STRING,
     },
-    description_consult: {
+    presentationText: {
       allowNull: true,
       type: Sequelize.STRING,
+    },
+    UserId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
     },
     createdAt: {
       allowNull: false,
