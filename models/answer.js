@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     image_url: DataTypes.STRING,
     ParticipantId: DataTypes.INTEGER,
     QuestionId: DataTypes.INTEGER,
+    isApproved: DataTypes.BOOLEAN,
   }, {});
   Answer.associate = (models) => {
     // associations can be defined here

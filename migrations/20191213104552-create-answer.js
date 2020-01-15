@@ -41,9 +41,10 @@ module.exports = {
       type: Sequelize.DATE,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
     },
-    approuvedAt: {
-      allowNull: true,
-      type: Sequelize.DATEONLY,
+    isApproved: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Answers'),

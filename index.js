@@ -44,6 +44,9 @@ app.use('/api/back/v1/questions', require('./router/back-office/questions'));
 // BACK OFFICE IMAGES
 app.use('/api/back/v1/images', require('./router/back-office/images'));
 
+// BACK OFFICE ANSWERS
+app.use('/api/back/v1/answers', require('./router/back-office/answers'));
+
 // BACK OFFICE USERS
 app.use('/api/back/v1/users', require('./router/back-office/users'));
 

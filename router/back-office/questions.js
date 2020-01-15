@@ -23,20 +23,21 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 // CREATE QUESTION
 router.post('/', isAuthenticated, async (req, res) => {
   const {
-    title, QuestionnaireId,
+    title, uploadFormat, QuestionnaireId,
   } = req.body;
   const question = await Question.create({
     title,
     QuestionnaireId,
+    uploadFormat,
   });
   res.status(200).send({ question });
 });
 
 // PUT QUESTION BY ID
 router.put('/:id', isAuthenticated, async (req, res) => {
-  const { title, uploadFormat } = req.body;
+  const { title, uploadFormat, QuestionnaireId } = req.body;
   await Question.update(
-    { title, uploadFormat },
+    { title, uploadFormat, QuestionnaireId },
     { where: { id: req.params.id } },
   )
     .then(() => {
