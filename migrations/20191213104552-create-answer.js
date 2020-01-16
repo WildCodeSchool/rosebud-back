@@ -9,7 +9,7 @@ module.exports = {
     },
     comment: {
       allowNull: false,
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(400),
     },
     image_url: {
       allowNull: false,

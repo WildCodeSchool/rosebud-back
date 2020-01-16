@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Answer = sequelize.define('Answer', {
     comment: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(400),
       set(val) {
         this.setDataValue('comment', val.charAt(0).toUpperCase() + val.slice(1).toLowerCase());
       },
