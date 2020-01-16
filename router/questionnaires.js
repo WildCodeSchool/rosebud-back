@@ -104,10 +104,9 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
   const options = {
+    type: sequelize.QueryTypes.SELECT,
     hasJoin: true,
     include: [{ model: Answer }],
-    bind: ['active'],
-    type: sequelize.QueryTypes.SELECT,
   };
   // eslint-disable-next-line no-underscore-dangle
   Participant._validateIncludedElements(options);
@@ -123,9 +122,9 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
       SELECT * FROM Participants
       WHERE
         QuestionnaireId=${QuestionnaireId}
-         ${status !== 'all' ? ' AND status = $1 ' : ' AND status IS NOT NULL '}
-         ${city !== 'all' ? ' AND LOWER(city) LIKE $2 ' : ' AND city IS NOT NULL '}
-         ${name !== 'all' ? ' AND LOWER(lastName) LIKE $3 ' : ' AND lastName IS NOT NULL '}
+         ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
+         ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
+         ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
       LIMIT ${limit}
       OFFSET ${offset}
     ) AS p 
