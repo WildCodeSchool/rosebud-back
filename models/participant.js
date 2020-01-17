@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     status: DataTypes.STRING,
     QuestionnaireId: DataTypes.INTEGER,
+    isApproved: DataTypes.BOOLEAN,
   }, {
     timestamps: false,
   });

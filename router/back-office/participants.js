@@ -1,44 +1,46 @@
 const express = require('express');
-const { Question } = require('../../models');
+const { Participant } = require('../../models');
 const { isAuthenticated } = require('../../utils/jwt.utils');
 
 const router = express.Router();
 
-// GET ALL QUESTIONS
+// GET ALL PARTICIPANTS
 router.get('/', isAuthenticated, async (req, res) => {
   const { QuestionnaireId } = req.query;
-  const { count } = await Question.findAndCountAll();
-  const questions = await Question.findAll(QuestionnaireId && { where: { QuestionnaireId } });
+  const { count } = await Participant.findAndCountAll();
+  const participants = await Participant.findAll(QuestionnaireId && { where: { QuestionnaireId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
-  res.send(questions);
+  res.send(participants);
 });
 
-// GET QUESTION BY ID
+// GET PARTICIPANT BY ID
 router.get('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
-  const question = await Question.findAll({ where: { id } });
-  res.send(question);
+  const participant = await Participant.findAll({ where: { id } });
+  res.send(participant);
 });
 
-// CREATE QUESTION
+// CREATE PARTICIPANT
 router.post('/', isAuthenticated, async (req, res) => {
   const {
-    title, uploadFormat, QuestionnaireId,
+    firstName, lastName, status, age, city, email, QuestionnaireId,
   } = req.body;
-  const question = await Question.create({
-    title,
-    QuestionnaireId,
-    uploadFormat,
+  const participant = await Participant.create({
+    firstName, lastName, status, age, city, email, QuestionnaireId,
   });
-  res.status(200).send({ question });
+  res.status(200).send({ participant });
 });
 
-// PUT QUESTION BY ID
+// PUT PARTICIPANT BY ID
 router.put('/:id', isAuthenticated, async (req, res) => {
-  const { title, uploadFormat, QuestionnaireId } = req.body;
-  await Question.update(
-    { title, uploadFormat, QuestionnaireId },
+  const {
+    firstName, lastName, status, age, city, email,
+  } = req.body;
+  await Participant.update(
+    {
+      firstName, lastName, status, age, city, email,
+    },
     { where: { id: req.params.id } },
   )
     .then(() => {
@@ -46,9 +48,9 @@ router.put('/:id', isAuthenticated, async (req, res) => {
     });
 });
 
-// DELETE QUESTION BY ID
+// DELETE PARTICIPANT BY ID
 router.delete('/:id', isAuthenticated, async (req, res) => {
-  await Question.destroy(
+  await Participant.destroy(
     { where: { id: req.params.id } },
   )
     .then(() => {

@@ -20,4 +20,16 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   res.send(answer);
 });
 
+// PUT ANSWER BY ID
+router.put('/:id', isAuthenticated, async (req, res) => {
+  const { comment, image_url, QuestionId } = req.body;
+  await Answer.update(
+    { comment, image_url, QuestionId },
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Answer Updated!' });
+    });
+});
+
 module.exports = router;
