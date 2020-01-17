@@ -103,10 +103,18 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
   } = req.query;
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
-  const options = {
-    type: sequelize.QueryTypes.SELECT,
+  const options = await {
     hasJoin: true,
     include: [{ model: Answer }],
+    replacements: {
+      status,
+      city: `%${city}%`,
+      name: `%${name}%`,
+      limit: Number(limit),
+      offset: Number(offset),
+      QuestionnaireId: Number(QuestionnaireId),
+    },
+    type: sequelize.QueryTypes.SELECT,
   };
   // eslint-disable-next-line no-underscore-dangle
   Participant._validateIncludedElements(options);
@@ -121,12 +129,12 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
     FROM (
       SELECT * FROM Participants
       WHERE
-        QuestionnaireId=${QuestionnaireId}
-         ${status !== 'all' ? ` AND status = '${status}' ` : ' AND status IS NOT NULL '}
-         ${city !== 'all' ? ` AND LOWER(city) LIKE '%${city}%' ` : ' AND city IS NOT NULL '}
-         ${name !== 'all' ? ` AND LOWER(lastName) LIKE '%${name}%' ` : ' AND lastName IS NOT NULL '}
-      LIMIT ${limit}
-      OFFSET ${offset}
+        QuestionnaireId=:QuestionnaireId
+         ${status !== 'all' ? 'AND status = :status' : ' AND status IS NOT NULL '}
+         ${city !== 'all' ? 'AND LOWER(city) LIKE :city' : ' AND city IS NOT NULL '}
+         ${name !== 'all' ? 'AND LOWER(lastName) LIKE :name' : ' AND lastName IS NOT NULL '}
+      LIMIT :limit
+      OFFSET :offset
     ) AS p 
     LEFT JOIN Answers AS a
     ON a.ParticipantId = p.id
