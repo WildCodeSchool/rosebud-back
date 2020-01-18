@@ -9,7 +9,6 @@ const router = express.Router();
 // GET ALL IMAGES
 router.get('/', isAuthenticated, async (req, res) => {
   const { QuestionId } = req.query;
-  console.log(QuestionId);
   const { count } = await Image.findAndCountAll();
   const images = await Image.findAll(QuestionId && { where: { QuestionId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
