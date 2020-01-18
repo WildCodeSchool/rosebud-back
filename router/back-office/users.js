@@ -15,7 +15,7 @@ router.get('/', isAuthenticated, async (req, res) => {
 });
 
 // CREATE USER
-router.post('/', isAuthenticated, async (req, res) => {
+router.post('/', async (req, res) => {
   // Params
   const { username } = req.body;
   const { email } = req.body;
