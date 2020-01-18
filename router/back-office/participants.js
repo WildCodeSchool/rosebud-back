@@ -35,11 +35,11 @@ router.post('/', isAuthenticated, async (req, res) => {
 // PUT PARTICIPANT BY ID
 router.put('/:id', isAuthenticated, async (req, res) => {
   const {
-    firstName, lastName, status, age, city, email,
+    firstName, lastName, status, age, city, email, isApproved,
   } = req.body;
   await Participant.update(
     {
-      firstName, lastName, status, age, city, email,
+      firstName, lastName, status, age, city, email, isApproved,
     },
     { where: { id: req.params.id } },
   )
