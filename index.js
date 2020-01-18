@@ -35,6 +35,9 @@ app.use('/api/v1/questions', require('./router/questions'));
 app.use('/api/v1/metrics', require('./router/metrics'));
 
 
+// BACK OFFICE STATISTIQUES
+app.use('/api/back/v1/metrics', require('./router/back-office/metrics'));
+
 // BACK OFFICE QUESTIONNAIRES
 app.use('/api/back/v1/questionnaires', require('./router/back-office/questionnaires'));
 
