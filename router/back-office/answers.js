@@ -6,9 +6,9 @@ const router = express.Router();
 
 // GET ALL ANSWERS
 router.get('/', isAuthenticated, async (req, res) => {
-  const { QuestionId } = req.query;
+  const { QuestionId, ParticipantId } = req.query;
   const { count } = await Answer.findAndCountAll();
-  const answers = await Answer.findAll(QuestionId && { where: { QuestionId } });
+  const answers = await Answer.findAll((QuestionId && { where: { QuestionId } }) || (ParticipantId && { where: { ParticipantId } }));
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(answers);
