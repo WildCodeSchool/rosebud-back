@@ -21,4 +21,16 @@ router.get('/participants', async (req, res) => {
   res.send(String(participantsCounter));
 });
 
+// GET PARTICIPANTS APPROVED COUNTER
+router.get('/participants/approve', async (req, res) => {
+  const participantsCounter = await Participant.count({ where: { isApproved: true } });
+  res.send(String(participantsCounter));
+});
+
+// GET PARTICIPANTS DISAPPROVED COUNTER
+router.get('/participants/disapprove', async (req, res) => {
+  const participantsCounter = await Participant.count({ where: { isApproved: false } });
+  res.send(String(participantsCounter));
+});
+
 module.exports = router;
