@@ -14,9 +14,15 @@ router.get('/', isAuthenticated, async (req, res) => {
   res.send(users);
 });
 
+// GET USER BY ID
+router.get('/:id', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findAll({ where: { id } });
+  res.send(user);
+});
+
 // CREATE USER
 router.post('/', async (req, res) => {
-  // Params
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;
@@ -45,11 +51,35 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET USER BY ID
-router.get('/:id', isAuthenticated, async (req, res) => {
+// PUT USER BY ID
+router.put('/:id', async (req, res) => {
+  const { username } = req.body;
+  const { email } = req.body;
+  const { password } = req.body;
   const { id } = req.params;
-  const user = await User.findAll({ where: { id } });
-  res.send(user);
+  if (email == null || username == null || password == null) {
+    res.status(400).json({ error: 'missing parameters' });
+  }
+  const userFound = await User.findOne({
+    attributes: ['username'],
+    where: { username },
+  });
+  const emailFound = await User.findOne({
+    attributes: ['email'],
+    where: { email },
+  });
+  if (!userFound || !emailFound) {
+    bcrypt.hash(password, 5, async (err, bcryptedPassword) => {
+      const editUser = await User.update({
+        email,
+        username,
+        password: bcryptedPassword,
+      }, { where: { id } });
+      res.status(200).send(String(editUser.id));
+    });
+  } else {
+    res.status(409).send({ error: 'User already exist' });
+  }
 });
 
 module.exports = router;
