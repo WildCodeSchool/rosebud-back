@@ -69,7 +69,6 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, n
   console.log(req.files);
 
   req.body.images = [];
-  
     req.files.map(async file => {
       
       await sharp(file.path)
