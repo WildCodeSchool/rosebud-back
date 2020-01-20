@@ -9,7 +9,7 @@ module.exports = {
     },
     comment: {
       allowNull: false,
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(400),
     },
     image_url: {
       allowNull: false,
@@ -40,10 +40,6 @@ module.exports = {
       allowNull: false,
       type: Sequelize.DATE,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-    },
-    approuvedAt: {
-      allowNull: true,
-      type: Sequelize.DATEONLY,
     },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Answers'),

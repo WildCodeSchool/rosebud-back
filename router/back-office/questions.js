@@ -6,8 +6,9 @@ const router = express.Router();
 
 // GET ALL QUESTIONS
 router.get('/', isAuthenticated, async (req, res) => {
+  const { QuestionnaireId } = req.query;
   const { count } = await Question.findAndCountAll();
-  const questions = await Question.findAll();
+  const questions = await Question.findAll(QuestionnaireId && { where: { QuestionnaireId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(questions);
@@ -23,24 +24,35 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 // CREATE QUESTION
 router.post('/', isAuthenticated, async (req, res) => {
   const {
-    title, QuestionnaireId,
+    title, uploadFormat, QuestionnaireId,
   } = req.body;
   const question = await Question.create({
     title,
     QuestionnaireId,
+    uploadFormat,
   });
   res.status(200).send({ question });
 });
 
 // PUT QUESTION BY ID
 router.put('/:id', isAuthenticated, async (req, res) => {
-  const { title, uploadFormat } = req.body;
+  const { title, uploadFormat, QuestionnaireId } = req.body;
   await Question.update(
-    { title, uploadFormat },
+    { title, uploadFormat, QuestionnaireId },
     { where: { id: req.params.id } },
   )
     .then(() => {
       res.json({ status: 'Question Updated!' });
+    });
+});
+
+// DELETE QUESTION BY ID
+router.delete('/:id', isAuthenticated, async (req, res) => {
+  await Question.destroy(
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Question Deleted!' });
     });
 });
 
