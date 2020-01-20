@@ -1,6 +1,9 @@
 const express = require('express');
 const multer = require('multer');
-const sharp = require('sharp')
+const sharp = require('sharp');
+const fs = require('fs');
+
+
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
@@ -67,19 +70,23 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
 // POST PARTICIPATION BY QUESTIONNAIRE
 router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, next) => {
   console.log(req.files);
+  req.files.map(async file => {
+    
+    await sharp(file.path)
+      .resize(500, 500, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true
+      })
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`public/uploads/img-small/${file.filename}`);
+      fs.unlink(`public/uploads/${file.filename}`, (err) => {
+        if (err) throw err;
+        console.log('successfully deleted original file');
+      });
+  });
 
-  req.body.images = [];
-    req.files.map(async file => {
-      
-      await sharp(file.path)
-        .resize(640, 320)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/${file.filename}`);
-
-      req.body.images.push(newFilename);
-      console.log(req.body.images)
-    })
+  
 
   const {
     firstName, lastName, status, age, city, email, questionsLength,
@@ -104,7 +111,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, n
 
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/', '/');
+      .path.replace('public/uploads', '/uploads/img-small');
 
     answers.push(
       Answer.create({
@@ -116,7 +123,6 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, n
     );
   }
   const answersResult = await Promise.all(answers);
-  console.log(req.files);
 
   res.status(200).send({ participant, answersResult });
   console.log(req.files);
