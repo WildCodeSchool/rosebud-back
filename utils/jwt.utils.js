@@ -15,7 +15,7 @@ module.exports = {
       },
       JWT_SIGN_SECRET,
       {
-        expiresIn: '3h',
+        expiresIn: '2h',
       },
     );
   },

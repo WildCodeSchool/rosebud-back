@@ -6,9 +6,13 @@ const router = express.Router();
 
 // GET ALL PARTICIPANTS
 router.get('/', isAuthenticated, async (req, res) => {
-  const { QuestionnaireId } = req.query;
+  const { QuestionnaireId, status, isApproved } = req.query;
   const { count } = await Participant.findAndCountAll();
-  const participants = await Participant.findAll(QuestionnaireId && { where: { QuestionnaireId } });
+  const participants = await Participant.findAll(
+    (QuestionnaireId && { where: { QuestionnaireId } })
+    || (status && { where: { status } })
+    || (isApproved && { where: { isApproved } }),
+  );
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(participants);
@@ -35,11 +39,11 @@ router.post('/', isAuthenticated, async (req, res) => {
 // PUT PARTICIPANT BY ID
 router.put('/:id', isAuthenticated, async (req, res) => {
   const {
-    firstName, lastName, status, age, city, email,
+    firstName, lastName, status, age, city, email, isApproved,
   } = req.body;
   await Participant.update(
     {
-      firstName, lastName, status, age, city, email,
+      firstName, lastName, status, age, city, email, isApproved,
     },
     { where: { id: req.params.id } },
   )

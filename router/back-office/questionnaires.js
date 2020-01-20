@@ -6,8 +6,9 @@ const router = express.Router();
 
 // GET ALL QUESTIONNAIRE
 router.get('/', isAuthenticated, async (req, res) => {
+  const { UserId } = req.query;
   const { count } = await Questionnaire.findAndCountAll();
-  const questionnaire = await Questionnaire.findAll();
+  const questionnaire = await Questionnaire.findAll(UserId && { where: { UserId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(questionnaire);
