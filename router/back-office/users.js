@@ -20,33 +20,29 @@ router.post('/', async (req, res) => {
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;
-
   if (email == null || username == null || password == null) {
-    return res.status(400).json({ error: 'missing parameters' });
+    res.status(400).json({ error: 'missing parameters' });
   }
-
-  await User.findOne({
+  const userFound = await User.findOne({
+    attributes: ['username'],
+    where: { username },
+  });
+  const emailFound = await User.findOne({
     attributes: ['email'],
     where: { email },
-  })
-    .then((userFound) => {
-      if (!userFound) {
-        bcrypt.hash(password, 5, (err, bcryptedPassword) => {
-          const newUser = User.create({
-            email,
-            username,
-            password: bcryptedPassword,
-          })
-            .then((newUser) => res.status(201).json({
-              userId: newUser.id,
-            }))
-            .catch((err) => res.status(500).json({ error: 'cannot add user' }));
-        });
-      } else {
-        return res.status(409).json({ error: 'user already exist ' });
-      }
-    })
-    .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
+  });
+  if (!userFound || !emailFound) {
+    bcrypt.hash(password, 5, async (err, bcryptedPassword) => {
+      const newUser = await User.create({
+        email,
+        username,
+        password: bcryptedPassword,
+      });
+      res.status(201).send(String(newUser.id));
+    });
+  } else {
+    res.status(409).send({ error: 'User already exist' });
+  }
 });
 
 // GET USER BY ID
