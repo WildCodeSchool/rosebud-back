@@ -5,7 +5,12 @@ const router = express.Router();
 
 // GET ANSWERS COUNTER
 router.get('/answers', async (req, res) => {
-  const answersCounter = await Answer.count();
+  const answersCounter = await Answer.count({
+    include: [{
+      model: Participant,
+      where: { isApproved: true },
+    }],
+  });
   res.send(String(answersCounter));
 });
 
@@ -17,14 +22,14 @@ router.get('/questionnaires', async (req, res) => {
 
 // GET PARTICIPANTS COUNTER
 router.get('/participants', async (req, res) => {
-  const participantsCounter = await Participant.count();
+  const participantsCounter = await Participant.count({ where: { isApproved: true } });
   res.send(String(participantsCounter));
 });
 
 // GET PARTICIPANTS COUNTER BY QUESTIONNAIRE ID
 router.get('/participants/:QuestionnaireId', async (req, res) => {
   const { QuestionnaireId } = req.params;
-  const participantsCount = await Participant.count({ where: { QuestionnaireId } });
+  const participantsCount = await Participant.count({ where: { QuestionnaireId, isApproved: true } });
   res.send(String(participantsCount));
 });
 
