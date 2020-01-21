@@ -8,7 +8,7 @@ const router = express.Router();
 // GET ALL USERS
 router.get('/', isAuthenticated, async (req, res) => {
   const { count } = await User.findAndCountAll();
-  const users = await User.findAll();
+  const users = await User.findAll({ attributes: { exclude: ['password'] } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(users);
