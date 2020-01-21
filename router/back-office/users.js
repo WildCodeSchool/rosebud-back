@@ -82,4 +82,15 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+
+// DELETE USER BY ID
+router.delete('/:id', isAuthenticated, async (req, res) => {
+  await User.destroy(
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'User Deleted!' });
+    });
+});
+
 module.exports = router;
