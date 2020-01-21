@@ -36,4 +36,14 @@ router.put('/:id', isAuthenticated, async (req, res) => {
     });
 });
 
+// DELETE ANSWER BY ID
+router.delete('/:id', isAuthenticated, async (req, res) => {
+  await Answer.destroy(
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Answer Deleted!' });
+    });
+});
+
 module.exports = router;
