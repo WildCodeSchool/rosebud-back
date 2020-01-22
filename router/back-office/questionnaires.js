@@ -52,13 +52,13 @@ router.put('/:id', isAuthenticated, async (req, res) => {
     });
 });
 
-// DELETE QUESTION BY ID
-router.delete('/:id', isAuthenticated, async (req, res) => {
+// DELETE QUESTIONNAIRE BY ID
+router.delete('/:id', async (req, res) => {
   await Questionnaire.destroy(
     { where: { id: req.params.id } },
   )
     .then(() => {
-      res.json({ status: 'Questionnaire Deleted!' });
+      res.json({ status: `Questionnaire ${req.params.id} Deleted!` });
     });
 });
 

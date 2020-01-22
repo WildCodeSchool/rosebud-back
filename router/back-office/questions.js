@@ -47,7 +47,7 @@ router.put('/:id', isAuthenticated, async (req, res) => {
 });
 
 // DELETE QUESTION BY ID
-router.delete('/:id', isAuthenticated, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   await Question.destroy(
     { where: { id: req.params.id } },
   )
