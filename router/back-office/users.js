@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../../utils/jwt.utils');
 const router = express.Router();
 
 // GET ALL USERS
-router.get('/', async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   const { count } = await User.findAndCountAll();
   const users = await User.findAll({ attributes: { exclude: ['password'] } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
@@ -15,14 +15,14 @@ router.get('/', async (req, res) => {
 });
 
 // GET USER BY ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const user = await User.findAll({ where: { id } });
   res.send(user);
 });
 
 // CREATE USER
-router.post('/', async (req, res) => {
+router.post('/', isAuthenticated, async (req, res) => {
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT USER BY ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', isAuthenticated, async (req, res) => {
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;
