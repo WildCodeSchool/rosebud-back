@@ -9,14 +9,14 @@ const {
 } = require('../models');
 
 const storage = multer.diskStorage({
-  destination : function(req,file,cb){
-    cb(null,'public/uploads/')
+  destination(req, file, cb) {
+    cb(null, 'public/uploads/');
   },
-  filename: function(req,file,cb) {
-    cb(null,Date.now() + file.originalname)
-  }
-})
-const upload = multer({ storage : storage });
+  filename(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -72,26 +72,20 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
 });
 
 // POST PARTICIPATION BY QUESTIONNAIRE
-router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, next) => {
-  console.log(req.files);
-  req.files.map(async file => {
-    
+router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) => {
+  req.files.map(async (file) => {
     await sharp(file.path)
       .resize(500, 500, {
         fit: sharp.fit.inside,
-        withoutEnlargement: true
+        withoutEnlargement: true,
       })
-      .toFormat("jpeg")
+      .toFormat('jpeg')
       .jpeg({ quality: 90 })
       .toFile(`public/uploads/img-small/${file.filename}`);
-      fs.unlink(`public/uploads/${file.filename}`, (err) => {
-        if (err) throw err;
-        console.log('successfully deleted original file');
-      });
+    fs.unlink(`public/uploads/${file.filename}`, (err) => {
+      if (err) throw err;
+    });
   });
-
-  
-
   const {
     firstName, lastName, status, age, city, email, questionsLength,
   } = req.body;
@@ -127,10 +121,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res, n
     );
   }
   const answersResult = await Promise.all(answers);
-
   res.status(200).send({ participant, answersResult });
-  console.log(req.files);
-
 });
 
 // GET Questions & Answers on WALLPAGE
