@@ -53,12 +53,12 @@ router.put('/:id', isAuthenticated, async (req, res) => {
 });
 
 // DELETE PARTICIPANT BY ID
-router.delete('/:id', isAuthenticated, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   await Participant.destroy(
     { where: { id: req.params.id } },
   )
     .then(() => {
-      res.json({ status: 'Question Deleted!' });
+      res.json({ status: 'Participant Deleted!' });
     });
 });
 
