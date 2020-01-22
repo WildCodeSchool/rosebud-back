@@ -109,7 +109,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
 
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads/img-small');
+      .path.replace('public/uploads', '/uploads');
 
     answers.push(
       Answer.create({
