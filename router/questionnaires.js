@@ -65,6 +65,7 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
 });
 // POST PARTICIPATION BY QUESTIONNAIRE
 router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) => {
+  console.log(req.files);
   req.files.map(async (file) => {
     await sharp(file.path)
       .resize(500, 500, {
@@ -73,7 +74,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/img-small/${file.filename}`);
+      .toFile(`public/uploads/${file.filename}_small`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
@@ -100,7 +101,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     } = req.body;
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads/img-small');
+      .path.replace('public/uploads', '/uploads').concat('', '_small');
     answers.push(
       Answer.create({
         comment,
