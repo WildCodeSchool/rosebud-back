@@ -2,8 +2,6 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
-
-
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
@@ -17,9 +15,7 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
-
 const router = express.Router();
-
 // GET RANDOM IMAGES
 router.get('/answers', async (req, res) => {
   const { limit } = req.query;
@@ -36,7 +32,6 @@ router.get('/answers', async (req, res) => {
   });
   res.send(homeImages);
 });
-
 // GET QUESTIONNAIRES
 router.get('/', async (req, res) => {
   const { query, offset, limit } = req.query;
@@ -50,14 +45,12 @@ router.get('/', async (req, res) => {
   });
   res.send(questionnaires);
 });
-
 // GET QUESTIONNAIRES BY ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const questionnaires = await Questionnaire.findAll({ where: { id } });
   res.send(questionnaires);
 });
-
 // GET QUESTIONS BY QUESTIONNAIRE
 router.get('/:QuestionnaireId/questions', async (req, res) => {
   const { QuestionnaireId } = req.params;
@@ -70,7 +63,6 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
   });
   res.send(questions);
 });
-
 // POST PARTICIPATION BY QUESTIONNAIRE
 router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) => {
   req.files.map(async (file) => {
@@ -81,7 +73,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/${file.filename}_small`);
+      .toFile(`public/uploads/img-small/${file.filename}`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
@@ -106,11 +98,9 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       [`answerImageSelect${i}`]: imageSelect,
       [`questionId${i}`]: QuestionId,
     } = req.body;
-
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads');
-
+      .path.replace('public/uploads', '/uploads/img-small');
     answers.push(
       Answer.create({
         comment,
@@ -123,14 +113,12 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
   const answersResult = await Promise.all(answers);
   res.status(200).send({ participant, answersResult });
 });
-
 // GET Questions & Answers on WALLPAGE
 router.get('/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
   const {
     status, city, name, limit, offset,
   } = req.query;
-
   const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
   const options = await {
@@ -175,5 +163,4 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
     questionnaires, questions, participants,
   });
 });
-
 module.exports = router;
