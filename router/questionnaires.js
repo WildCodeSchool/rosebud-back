@@ -29,6 +29,7 @@ router.get('/answers', async (req, res) => {
     order: [
       Sequelize.fn('RAND'),
     ],
+    where: { isApproved: true },
   });
   res.send(homeImages);
 });
@@ -165,6 +166,7 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
       SELECT * FROM Participants
       WHERE
         QuestionnaireId=:QuestionnaireId
+        AND isApproved = true
          ${status !== 'all' ? 'AND status = :status' : ' AND status IS NOT NULL '}
          ${city !== 'all' ? 'AND LOWER(city) LIKE :city' : ' AND city IS NOT NULL '}
          ${name !== 'all' ? 'AND LOWER(lastName) LIKE :name' : ' AND lastName IS NOT NULL '}
