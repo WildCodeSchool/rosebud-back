@@ -17,7 +17,10 @@ router.get('/answers', async (req, res) => {
     order: [
       Sequelize.fn('RAND'),
     ],
-    where: { isApproved: true },
+    include: [{
+      model: Participant,
+      where: { isApproved: true },
+    }],
   });
   res.send(homeImages);
 });
