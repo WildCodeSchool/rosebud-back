@@ -81,7 +81,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/img-small/${file.filename}`);
+      .toFile(`public/uploads/${file.filename}_small`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
