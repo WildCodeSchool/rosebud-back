@@ -1,0 +1,1 @@
+release: npm run sequelize db:migrate
