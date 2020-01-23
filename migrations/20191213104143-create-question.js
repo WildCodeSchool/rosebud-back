@@ -14,6 +14,7 @@ module.exports = {
     QuestionnaireId: {
       allowNull: false,
       type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
       references: {
         model: 'Questionnaires',
         key: 'id',

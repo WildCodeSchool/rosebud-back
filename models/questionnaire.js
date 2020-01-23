@@ -4,9 +4,10 @@ module.exports = (sequelize, DataTypes) => {
     participationText: DataTypes.STRING,
     presentationText: DataTypes.STRING,
     UserId: DataTypes.INTEGER,
+    defaultQuestionnaire: DataTypes.BOOLEAN,
   }, {});
   Questionnaire.associate = (models) => {
-    models.Questionnaire.hasMany(models.Question, { onDelete: 'CASCADE' });
+    models.Questionnaire.hasMany(models.Question, { onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false } });
     models.Questionnaire.belongsTo(models.User, {
       foreignKey: {
         allowNull: false,

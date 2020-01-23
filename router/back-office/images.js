@@ -51,7 +51,7 @@ router.put('/:id', upload.single('image_url'), async (req, res) => {
 });
 
 // DELETE IMAGE BY ID
-router.delete('/:id', isAuthenticated, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   await Image.destroy(
     { where: { id: req.params.id } },
   )

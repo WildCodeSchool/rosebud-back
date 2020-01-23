@@ -22,7 +22,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 });
 
 // CREATE USER
-router.post('/', async (req, res) => {
+router.post('/', isAuthenticated, async (req, res) => {
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT USER BY ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', isAuthenticated, async (req, res) => {
   const { username } = req.body;
   const { email } = req.body;
   const { password } = req.body;

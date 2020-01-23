@@ -13,11 +13,13 @@ module.exports = (sequelize, DataTypes) => {
   Answer.associate = (models) => {
     // associations can be defined here
     models.Answer.belongsTo(models.Question, {
+      onDelete: 'CASCADE', hooks: true,
       foreignKey: {
         allowNull: false,
       },
     });
     models.Answer.belongsTo(models.Participant, {
+      onDelete: 'CASCADE', hooks: true,
       foreignKey: {
         allowNull: false,
       },
