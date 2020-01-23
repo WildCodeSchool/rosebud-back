@@ -6,7 +6,12 @@ module.exports = (sequelize, DataTypes) => {
     image_url: DataTypes.STRING,
   }, {});
   Image.associate = (models) => {
-    Image.belongsTo(models.Question, { foreignKey: 'QuestionId' });
+    Image.belongsTo(models.Question, { 
+      onDelete: 'CASCADE', hooks: true,
+      foreignKey: {
+        allowNull: false,
+      },
+    });
   };
   return Image;
 };
