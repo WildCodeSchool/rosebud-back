@@ -35,6 +35,9 @@ app.use('/api/v1/questions', require('./router/questions'));
 app.use('/api/v1/metrics', require('./router/metrics'));
 
 
+// BACK OFFICE STATISTIQUES
+app.use('/api/back/v1/metrics', require('./router/back-office/metrics'));
+
 // BACK OFFICE QUESTIONNAIRES
 app.use('/api/back/v1/questionnaires', require('./router/back-office/questionnaires'));
 
@@ -43,6 +46,12 @@ app.use('/api/back/v1/questions', require('./router/back-office/questions'));
 
 // BACK OFFICE IMAGES
 app.use('/api/back/v1/images', require('./router/back-office/images'));
+
+// BACK OFFICE PARTICIPANTS
+app.use('/api/back/v1/participants', require('./router/back-office/participants'));
+
+// BACK OFFICE ANSWERS
+app.use('/api/back/v1/answers', require('./router/back-office/answers'));
 
 // BACK OFFICE USERS
 app.use('/api/back/v1/users', require('./router/back-office/users'));

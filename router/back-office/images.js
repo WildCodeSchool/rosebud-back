@@ -8,8 +8,9 @@ const router = express.Router();
 
 // GET ALL IMAGES
 router.get('/', isAuthenticated, async (req, res) => {
+  const { QuestionId } = req.query;
   const { count } = await Image.findAndCountAll();
-  const images = await Image.findAll();
+  const images = await Image.findAll(QuestionId && { where: { QuestionId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
   res.send(images);
@@ -23,7 +24,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 });
 
 // CREATE IMAGE
-router.post('/', upload.single('image_url'), isAuthenticated, async (req, res) => {
+router.post('/', upload.single('image_url'), async (req, res) => {
   const {
     QuestionId, title,
   } = req.body;
@@ -37,15 +38,25 @@ router.post('/', upload.single('image_url'), isAuthenticated, async (req, res) =
 });
 
 // PUT IMAGE BY ID
-router.put('/:id', upload.single('image_url'), isAuthenticated, async (req, res) => {
-  const { QuestionId, title } = req.body;
-  const imageUrl = req.file.path.replace('public/', '/');
+router.put('/:id', upload.single('image_url'), async (req, res) => {
+  const { QuestionId, title, currentImage } = req.body;
+  const imageUrl = currentImage || req.file.path.replace('public/', '/');
   await Image.update(
     { QuestionId, title, image_url: imageUrl },
     { where: { id: req.params.id } },
   )
     .then(() => {
       res.json({ status: 'Image Updated!' });
+    });
+});
+
+// DELETE IMAGE BY ID
+router.delete('/:id', async (req, res) => {
+  await Image.destroy(
+    { where: { id: req.params.id } },
+  )
+    .then(() => {
+      res.json({ status: 'Image Deleted!' });
     });
 });
 

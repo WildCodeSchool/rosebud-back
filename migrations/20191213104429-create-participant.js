@@ -34,10 +34,16 @@ module.exports = {
     QuestionnaireId: {
       allowNull: false,
       type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
       references: {
         model: 'Questionnaires',
         key: 'id',
       },
+    },
+    isApproved: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
     createdAt: {
       allowNull: false,

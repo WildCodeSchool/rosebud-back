@@ -1,16 +1,11 @@
 const express = require('express');
-const { Answer, Participant, Questionnaire } = require('../models');
+const { Questionnaire, Answer, Participant } = require('../../models');
 
 const router = express.Router();
 
 // GET ANSWERS COUNTER
 router.get('/answers', async (req, res) => {
-  const answersCounter = await Answer.count({
-    include: [{
-      model: Participant,
-      where: { isApproved: true },
-    }],
-  });
+  const answersCounter = await Answer.count();
   res.send(String(answersCounter));
 });
 
@@ -22,15 +17,20 @@ router.get('/questionnaires', async (req, res) => {
 
 // GET PARTICIPANTS COUNTER
 router.get('/participants', async (req, res) => {
+  const participantsCounter = await Participant.count();
+  res.send(String(participantsCounter));
+});
+
+// GET PARTICIPANTS APPROVED COUNTER
+router.get('/participants/approve', async (req, res) => {
   const participantsCounter = await Participant.count({ where: { isApproved: true } });
   res.send(String(participantsCounter));
 });
 
-// GET PARTICIPANTS COUNTER BY QUESTIONNAIRE ID
-router.get('/participants/:QuestionnaireId', async (req, res) => {
-  const { QuestionnaireId } = req.params;
-  const participantsCount = await Participant.count({ where: { QuestionnaireId, isApproved: true } });
-  res.send(String(participantsCount));
+// GET PARTICIPANTS DISAPPROVED COUNTER
+router.get('/participants/disapprove', async (req, res) => {
+  const participantsCounter = await Participant.count({ where: { isApproved: false } });
+  res.send(String(participantsCounter));
 });
 
 module.exports = router;

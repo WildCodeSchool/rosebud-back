@@ -22,17 +22,20 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     status: DataTypes.STRING,
     QuestionnaireId: DataTypes.INTEGER,
+    isApproved: DataTypes.BOOLEAN,
   }, {
     timestamps: false,
   });
   Participant.associate = (models) => {
     // associations can be defined here
     models.Participant.belongsTo(models.Questionnaire, {
+      onDelete: 'CASCADE', hooks: true,
       foreignKey: {
         allowNull: false,
       },
     });
-    models.Participant.hasMany(models.Answer);
-  };
+    models.Participant.hasMany(models.Answer, {
+      onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false }})
+    };
   return Participant;
 };
