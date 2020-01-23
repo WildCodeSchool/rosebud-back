@@ -13,8 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
     });
-    models.Question.hasMany(models.Answer);
-    models.Question.hasMany(models.Image);
+    models.Question.hasMany(models.Answer, {
+      onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false }});
+    models.Question.hasMany(models.Image, {
+      onDelete: 'CASCADE', hooks: true, foreignKey: { allowNull: false }});
   };
   return Question;
 };

@@ -13,7 +13,7 @@ const router = express.Router();
     }
   });
 
-  const readStream = fs.createReadStream();
+  const readStream = fs.createReadStream(index.html);
 
   router.post('/', async (req,res) => {
     const { to } = req.body;

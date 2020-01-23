@@ -18,6 +18,7 @@ module.exports = {
     ParticipantId: {
       allowNull: false,
       type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
       references: {
         model: 'Participants',
         key: 'id',
@@ -26,6 +27,7 @@ module.exports = {
     QuestionId: {
       allowNull: false,
       type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
       references: {
         model: 'Questions',
         key: 'id',
