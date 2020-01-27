@@ -72,9 +72,7 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
 // POST PARTICIPATION BY QUESTIONNAIRE
 router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) => {
   console.log(req.files);
-  
   req.files.map(async (file) => {
-    console.log()
     await sharp(file.path)
       .resize(800, 800, {
         fit: sharp.fit.inside,
