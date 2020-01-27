@@ -1,1 +1,1 @@
-release: npm run sequelize db:migrate
+release: npm run sequelize db:migrate:undo:all && npm run sequelize db:migrate
