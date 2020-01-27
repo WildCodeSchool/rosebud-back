@@ -28,6 +28,10 @@ router.get('/answers', async (req, res) => {
     include: [{
       model: Participant,
       where: { isApproved: true },
+      include: [{
+        model: Questionnaire,
+        where: { defaultQuestionnaire: true },
+      }],
     }],
   });
   res.send(homeImages);
