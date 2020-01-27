@@ -27,7 +27,7 @@ module.exports = {
         key: 'id',
       },
     },
-    defaultQuestionnaire: {
+    isOnline: {
       allowNull: false,
       type: Sequelize.BOOLEAN,
       defaultValue: false,
@@ -44,4 +44,4 @@ module.exports = {
     },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Questionnaires'),
-  }
+};

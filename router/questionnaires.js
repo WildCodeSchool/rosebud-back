@@ -32,7 +32,7 @@ router.get('/answers', async (req, res) => {
       where: { isApproved: true },
       include: [{
         model: Questionnaire,
-        where: { defaultQuestionnaire: true },
+        where: { isOnline: true },
       }],
     }],
   });
@@ -44,6 +44,7 @@ router.get('/', async (req, res) => {
   const questionnaires = await Questionnaire.findAll({
     where: {
       title: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${query}%`),
+      isOnline: true,
     },
     offset: Number(offset),
     limit: Number(limit),
