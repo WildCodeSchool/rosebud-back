@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
+const path = require('path');
+
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
@@ -11,7 +13,7 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads/');
   },
   filename(req, file, cb) {
-    cb(null, Date.now() + file.originalname);
+    cb(null, Date.now() + file.fieldname);
   },
 });
 const upload = multer({ storage });
@@ -75,10 +77,11 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       .resize(800, 800, {
         fit: sharp.fit.inside,
         withoutEnlargement: true,
+        progressive: true,
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/${file.filename}_small`);
+      .toFile(`public/uploads/${file.filename}_small${path.extname(file.originalname)}`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
@@ -105,7 +108,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     } = req.body;
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads').concat('', '_small');
+      .path.replace('public/uploads', '/uploads').concat('', `_small${path.extname(req.files[i].originalname)}`);
     answers.push(
       Answer.create({
         comment,
