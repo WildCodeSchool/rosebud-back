@@ -16,7 +16,7 @@ router.get('/answers', async (req, res) => {
 
 // GET QUESTIONNAIRES COUNTER
 router.get('/questionnaires', async (req, res) => {
-  const questionnairesCounter = await Questionnaire.count();
+  const questionnairesCounter = await Questionnaire.count({ where: { isOnline: true } });
   res.send(String(questionnairesCounter));
 });
 
