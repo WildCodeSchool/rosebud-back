@@ -1,1 +1,1 @@
-release: npm run sequelize db:migrate && npm run sequelize -- db:seed --seed 20200123105337-admin-user.js
+release: npm run sequelize db:migrate
