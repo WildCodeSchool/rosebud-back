@@ -81,7 +81,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/${file.filename}_small${path.extname(file.originalname)}`);
+      .toFile(`public/uploads/${file.filename}_small.jpg`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
@@ -108,7 +108,8 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     } = req.body;
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads').concat('', `_small${path.extname(req.files[i].originalname)}`);
+      .path.replace('public/uploads', '/uploads').concat('', '_small.jpg');
+    console.log(imageUrl);
     answers.push(
       Answer.create({
         comment,
