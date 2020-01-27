@@ -2,6 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
+const nodemailer = require("nodemailer");
+const path = require('path')
+
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
@@ -80,7 +83,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     });
   });
   const {
-    firstName, lastName, status, age, city, email, questionsLength,
+    firstName, lastName, status, age, city, email, questionsLength, 
   } = req.body;
   const { QuestionnaireId } = req.params;
   const participant = await Participant.create({
@@ -92,6 +95,8 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     email,
     QuestionnaireId,
   });
+
+  
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
     const {
@@ -100,8 +105,8 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       [`questionId${i}`]: QuestionId,
     } = req.body;
     const imageUrl = imageSelect || req.files
-      .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads').concat('', '_small');
+    .find(({ fieldname }) => fieldname === `answerImage${i}`)
+    .path.replace('public/uploads', '/uploads').concat('', '_small');
     answers.push(
       Answer.create({
         comment,
@@ -111,8 +116,29 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       }),
     );
   }
+
   const answersResult = await Promise.all(answers);
-  res.status(200).send({ participant, answersResult });
+
+  const readStream = fs.createReadStream(path.resolve(__dirname, 'index.html'));
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS
+    }
+  });
+
+  const mail = await transporter.sendMail({
+    from: "me",
+    to: email,
+    subject: "merci pour votre participation",
+    html: readStream
+  })
+    
+  res.status(200).send({ participant, answersResult, mail });
 });
 // GET Questions & Answers on WALLPAGE
 router.get('/:QuestionnaireId/participations', async (req, res) => {

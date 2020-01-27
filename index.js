@@ -92,8 +92,6 @@ app.post('/api/back/v1/admin/login', async (req, res) => {
     .catch((err) => res.status(500).json({ error: 'unable to verify user' }));
 });
 
-// SEND MAIL
-app.use('/api/v1/email', require('./router/back-office/mail'));
 
 // LISTEN PORT
 app.listen(port, (err) => {
