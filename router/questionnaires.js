@@ -32,7 +32,7 @@ router.get('/answers', async (req, res) => {
       where: { isApproved: true },
       include: [{
         model: Questionnaire,
-        where: { id: 1, isOnline: true },
+        where: { isOnline: true },
       }],
     }],
   });
