@@ -2,7 +2,6 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
-const path = require('path');
 
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
