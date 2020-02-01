@@ -18,6 +18,33 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const router = express.Router();
 
+
+// GET RANDOM IMAGES
+router.get('/:QuestionnaireId/answers', async (req, res) => {
+  const { limit } = req.query;
+  const { QuestionnaireId } = req.params;
+  const options = await {
+    hasJoin: true,
+    include: [{ model: Participant }],
+    type: sequelize.QueryTypes.SELECT,
+  };
+    // eslint-disable-next-line no-underscore-dangle
+  Answer._validateIncludedElements(options);
+  const homeImages = await sequelize.query(`
+    SELECT
+      a.image_url
+    FROM
+      Answers AS a
+      INNER JOIN Participants AS p ON  a.ParticipantId = p.id
+      INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
+    WHERE
+      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true
+    ORDER BY RAND()
+    LIMIT ${limit}
+    `, options);
+  res.send(homeImages);
+});
+
 // GET QUESTIONNAIRES
 router.get('/', async (req, res) => {
   const { query, offset, limit } = req.query;
