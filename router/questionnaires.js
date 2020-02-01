@@ -21,23 +21,33 @@ const router = express.Router();
 // GET RANDOM IMAGES
 router.get('/answers', async (req, res) => {
   const { limit } = req.query;
-  const homeImages = await Answer.findAll({
-    attributes: ['id', 'image_url', 'ParticipantId'],
-    limit: limit && Number(limit),
-    order: [
-      Sequelize.fn('RAND'),
-    ],
-    include: [{
-      model: Participant,
-      where: { isApproved: true },
-      include: [{
-        model: Questionnaire,
-        where: { isOnline: true },
-      }],
-    }],
-  });
+  const options = await {
+    hasJoin: true,
+    include: [{ model: Participant }],
+    type: sequelize.QueryTypes.SELECT,
+  };
+  // eslint-disable-next-line no-underscore-dangle
+  Answer._validateIncludedElements(options);
+  const homeImages = await sequelize.query(`
+  SELECT
+    a.image_url,
+    p.isApproved,
+    p.QuestionnaireId,
+    q.id,
+    q.isOnline
+  FROM
+    Answers AS a
+    RIGHT JOIN Participants AS p ON p.id = a.ParticipantId
+    RIGHT JOIN Questionnaires AS q ON q.id = p.QuestionnaireId
+  WHERE
+    p.isApproved = true
+    AND QuestionnaireId = 1
+    AND q.isOnline = true
+  LIMIT ${limit}
+  `, options);
   res.send(homeImages);
 });
+
 // GET QUESTIONNAIRES
 router.get('/', async (req, res) => {
   const { query, offset, limit } = req.query;
