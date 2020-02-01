@@ -20,9 +20,8 @@ const router = express.Router();
 
 
 // GET RANDOM IMAGES
-router.get('/:QuestionnaireId/answers', async (req, res) => {
-  const { limit } = req.query;
-  const { QuestionnaireId } = req.params;
+router.get('/answers', async (req, res) => {
+  const { limit, QuestionnaireId } = req.query;
   const options = await {
     hasJoin: true,
     include: [{ model: Participant }],
