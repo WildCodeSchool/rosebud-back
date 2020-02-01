@@ -19,8 +19,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const router = express.Router();
 // GET RANDOM IMAGES
-router.get('/answers', async (req, res) => {
+router.get('/answers/questionnaire/:QuestionnaireId', async (req, res) => {
   const { limit } = req.query;
+  const { QuestionnaireId } = req.params;
   const options = await {
     hasJoin: true,
     include: [{ model: Participant }],
@@ -30,19 +31,14 @@ router.get('/answers', async (req, res) => {
   Answer._validateIncludedElements(options);
   const homeImages = await sequelize.query(`
   SELECT
-    a.image_url,
-    p.isApproved,
-    p.QuestionnaireId,
-    q.id,
-    q.isOnline
+    a.image_url
   FROM
     Answers AS a
-    RIGHT JOIN Participants AS p ON p.id = a.ParticipantId
-    RIGHT JOIN Questionnaires AS q ON q.id = p.QuestionnaireId
+    INNER JOIN Participants AS p ON  a.ParticipantId = p.id
+    INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
   WHERE
-    p.isApproved = true
-    AND QuestionnaireId = 1
-    AND q.isOnline = true
+    p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true
+  ORDER BY RAND()
   LIMIT ${limit}
   `, options);
   res.send(homeImages);
