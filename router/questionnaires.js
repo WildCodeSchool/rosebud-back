@@ -20,7 +20,7 @@ const router = express.Router();
 
 
 // GET RANDOM IMAGES
-router.get('/:QuestionnaireId', async (req, res) => {
+router.get('/answers', async (req, res) => {
   const { limit } = req.query;
   const { QuestionnaireId } = req.params;
   const options = await {
