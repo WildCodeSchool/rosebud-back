@@ -20,7 +20,7 @@ const router = express.Router();
 
 
 // GET RANDOM IMAGES
-router.get('/answers', async (req, res) => {
+router.get('/:QuestionnaireId/answers', async (req, res) => {
   const { limit } = req.query;
   const { QuestionnaireId } = req.params;
   const options = await {
@@ -38,7 +38,7 @@ router.get('/answers', async (req, res) => {
       INNER JOIN Participants AS p ON  a.ParticipantId = p.id
       INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
     WHERE
-      p.QuestionnaireId = 1 AND p.isApproved = true AND q.isOnline = true
+      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true
     ORDER BY RAND()
     LIMIT ${limit}
     `, options);
