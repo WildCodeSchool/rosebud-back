@@ -2,7 +2,6 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
-const path = require('path');
 
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
@@ -18,26 +17,33 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 const router = express.Router();
+
+
 // GET RANDOM IMAGES
 router.get('/answers', async (req, res) => {
-  const { limit } = req.query;
-  const homeImages = await Answer.findAll({
-    attributes: ['id', 'image_url', 'ParticipantId'],
-    limit: limit && Number(limit),
-    order: [
-      Sequelize.fn('RAND'),
-    ],
-    include: [{
-      model: Participant,
-      where: { isApproved: true },
-      include: [{
-        model: Questionnaire,
-        where: { isOnline: true },
-      }],
-    }],
-  });
+  const { limit, QuestionnaireId } = req.query;
+  const options = await {
+    hasJoin: true,
+    include: [{ model: Participant }],
+    type: sequelize.QueryTypes.SELECT,
+  };
+    // eslint-disable-next-line no-underscore-dangle
+  Answer._validateIncludedElements(options);
+  const homeImages = await sequelize.query(`
+    SELECT
+      a.image_url
+    FROM
+      Answers AS a
+      INNER JOIN Participants AS p ON  a.ParticipantId = p.id
+      INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
+    WHERE
+      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true
+    ORDER BY RAND()
+    LIMIT ${limit}
+    `, options);
   res.send(homeImages);
 });
+
 // GET QUESTIONNAIRES
 router.get('/', async (req, res) => {
   const { query, offset, limit } = req.query;
