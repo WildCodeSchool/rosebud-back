@@ -37,7 +37,7 @@ router.get('/answers', async (req, res) => {
       INNER JOIN Participants AS p ON  a.ParticipantId = p.id
       INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
     WHERE
-      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true
+      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true AND q.isPrivate = false
     ORDER BY RAND()
     LIMIT ${limit}
     `, options);
