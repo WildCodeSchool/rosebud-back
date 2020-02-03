@@ -173,7 +173,7 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
     ) AS p 
     LEFT JOIN Answers AS a
     ON a.ParticipantId = p.id
-    ORDER BY a.QuestionId ASC;
+    ORDER BY a.QuestionId ASC, updatedAt DESC ;
   `, options);
   res.send({
     questionnaires, questions, participants,
