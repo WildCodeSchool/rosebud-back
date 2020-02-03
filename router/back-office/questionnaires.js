@@ -24,10 +24,10 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 // CREATE QUESTIONNAIRE
 router.post('/', isAuthenticated, async (req, res) => {
   const {
-    title, participationText, presentationText, UserId, isOnline,
+    title, participationText, presentationText, UserId, isOnline, isPrivate,
   } = req.body;
   await Questionnaire.create({
-    title, participationText, presentationText, UserId, isOnline,
+    title, participationText, presentationText, UserId, isOnline, isPrivate,
   })
     .then(() => {
       res.json({ status: 'Questionnaire Created!' });
@@ -38,12 +38,12 @@ router.post('/', isAuthenticated, async (req, res) => {
 // PUT QUESTIONNAIRE
 router.put('/:id', isAuthenticated, async (req, res) => {
   const {
-    title, participationText, presentationText, isOnline,
+    title, participationText, presentationText, isOnline, isPrivate,
   } = req.body;
 
   await Questionnaire.update(
     {
-      title, participationText, presentationText, isOnline,
+      title, participationText, presentationText, isOnline, isPrivate,
     },
     { where: { id: req.params.id } },
   )

@@ -32,6 +32,11 @@ module.exports = {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    isPrivate: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
