@@ -9,6 +9,10 @@ router.get('/answers', async (req, res) => {
     include: [{
       model: Participant,
       where: { isApproved: true },
+      include: [{
+        model: Questionnaire,
+        where: { isPrivate: false },
+      }],
     }],
   });
   res.send(String(answersCounter));
@@ -16,13 +20,21 @@ router.get('/answers', async (req, res) => {
 
 // GET QUESTIONNAIRES COUNTER
 router.get('/questionnaires', async (req, res) => {
-  const questionnairesCounter = await Questionnaire.count({ where: { isOnline: true } });
+  const questionnairesCounter = await Questionnaire.count({ where: { isOnline: true, isPrivate: false } });
   res.send(String(questionnairesCounter));
 });
 
 // GET PARTICIPANTS COUNTER
 router.get('/participants', async (req, res) => {
-  const participantsCounter = await Participant.count({ where: { isApproved: true } });
+  const participantsCounter = await Participant.count(
+    {
+      where: { isApproved: true },
+      include: [{
+        model: Questionnaire,
+        where: { isPrivate: false },
+      }],
+    },
+  );
   res.send(String(participantsCounter));
 });
 

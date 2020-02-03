@@ -51,6 +51,7 @@ router.get('/', async (req, res) => {
     where: {
       title: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${query}%`),
       isOnline: true,
+      isPrivate: false,
     },
     offset: Number(offset),
     limit: Number(limit),
