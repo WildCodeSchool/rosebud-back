@@ -4,6 +4,8 @@ const sharp = require('sharp');
 const fs = require('fs');
 const nodemailer = require("nodemailer");
 const path = require('path')
+const mailParticipation = require('./mailParticipation')
+const mailModerate = require('./mailModerate')
 
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
@@ -119,7 +121,11 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
 
   const answersResult = await Promise.all(answers);
 
-  const readStream = fs.createReadStream(path.resolve(__dirname, 'index.html'));
+  const questionnaire = await Questionnaire.findOne({ where:{ id:QuestionnaireId }});
+
+  console.log(questionnaire.title)
+
+  //const readStream = fs.createReadStream(path.resolve(__dirname, 'index.html'));
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -135,10 +141,17 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     from: "me",
     to: email,
     subject: "merci pour votre participation",
-    html: readStream
+    html: mailParticipation()
+  })
+
+  const mailCheck = await transporter.sendMail({
+    from:"me",
+    to: email,
+    subject:"une nouvelle participation a été soumise",
+    html: mailModerate({ title:questionnaire.title })
   })
     
-  res.status(200).send({ participant, answersResult, mail });
+  res.status(200).send({ participant, answersResult, mail, mailCheck });
 });
 // GET Questions & Answers on WALLPAGE
 router.get('/:QuestionnaireId/participations', async (req, res) => {

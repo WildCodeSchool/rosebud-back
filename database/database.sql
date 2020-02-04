@@ -35,6 +35,7 @@ CREATE TABLE `answers` (
   CONSTRAINT `answers_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --

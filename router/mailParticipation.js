@@ -1,8 +1,7 @@
-module.exports = mailParticipation
-
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+module.exports = mailParticipation = () => {
+    let mail =`
+    
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns:v="urn:schemas-microsoft-com:vml ">
   <head>
@@ -54,3 +53,6 @@ module.exports = mailParticipation
 </table>
   </body>
 </html>
+    `
+return mail
+}

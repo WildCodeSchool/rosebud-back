@@ -1,6 +1,5 @@
-module.exports = mailParticipation
-
-
+module.exports = mailModerate = ({ title }) => {
+    let mail =`
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -38,19 +37,13 @@ module.exports = mailParticipation
       <tbody>
         <tr>  
           <td align="center" height="100" style="font-family:'Roboto'; font-size:20px; line-height:100px;">
-            Merci d'avoir participé à Rosebud
+            Une nouvelle participation au questionnaire ${ title } a été soumise à modération
           </td>
         </tr>
       </tbody>
     </table>
-    <table bgcolor="#ddddbd" width="100%" height="200px" border="0" cellpadding="0" cellspacing="0" >
-      <tbody>
-        <tr>  
-    <td align="center" height="100" style="font-family:'Tangerine'; font-size:30px; line-height:100px;">
-      Vos réponses seront bientôt validées par les administrateurs du site, et un mail de confirmation vous sera envoyé dès que vos contributions seront en ligne
-    </td>
-  </tr>
-</tbody>
-</table>
   </body>
-</html>
+</html>`
+
+return mail
+}
