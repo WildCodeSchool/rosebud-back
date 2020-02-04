@@ -1,4 +1,4 @@
-module.exports = ({ firstName }) => {
+module.exports = () => {
   const mail = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
       <html xmlns:v="urn:schemas-microsoft-com:vml ">
@@ -76,6 +76,7 @@ module.exports = ({ firstName }) => {
             <tbody
               style="
                 text-align: center;
+                color: #363635;
               "
             >
               <tr>  
@@ -83,7 +84,7 @@ module.exports = ({ firstName }) => {
                   style="color: #363635;"
                 >
                 <strong style="font-size: 18px; color: #363635;">
-                  Bonjour ${firstName}, merci d'avoir participé à Rosebud !
+                  Merci d'avoir participé à Rosebud !
                 </strong>
                 <br/><br/>
                 Vos réponses au questionnaire seront bientôt validées par les administrateurs du site, et un mail de confirmation vous sera envoyé dès que vos contributions seront en ligne.

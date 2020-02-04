@@ -1,4 +1,4 @@
-module.exports = ({ QuestionnaireId, title, firstName }) => {
+module.exports = ({ QuestionnaireId, title }) => {
   const mail = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
       <html xmlns:v="urn:schemas-microsoft-com:vml ">
@@ -76,25 +76,18 @@ module.exports = ({ QuestionnaireId, title, firstName }) => {
             <tbody
               style="
                 text-align: center;
+                color: #363635;
               "
             >
               <tr>  
                 <td
                   style="color: #363635;"
                 >
-                  Vous avez récemment participé à Rosebud en remplissant le questionnaire
+                  Vous avez récemment participé à Rosebud en remplissant le questionnaire :
                   <br/>
-                  <strong style="color: #363635;">${title}</strong>.
+                  <strong style="color: #363635;">${title}</strong>
                   <br/><br/>
-                  <strong style="color: #363635;">Vos réponses sont désormais en ligne !</strong>
-                  <br/><br/>
-                  <a 
-                    href="https://rosebud.website/questionnaires/${QuestionnaireId}" 
-                    target="_blank"
-                    style="font-size: 14px; color: #363635;"
-                  >
-                    Accèder au mur de participations
-                  </a>
+                  <strong style="color: #363635;">Vos réponses sont désormais <a href="https://rosebud.website/questionnaire/${QuestionnaireId}" target="_blank" style="color: #363635;">en ligne</a> !</strong>
                 </td>
               </tr>
             </tbody>

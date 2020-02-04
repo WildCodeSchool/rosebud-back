@@ -80,7 +80,7 @@ module.exports = ({ title, firstName, lastName }) => {
             >
               <tr>  
                 <td style="color: #363635;">
-                  <strong style="color: #363635;">${firstName} ${lastName}</strong> a soumis(e) une participation au questionnaire
+                  <strong style="color: #363635;">${firstName} ${lastName}</strong> a soumis(e) une participation au questionnaire :
                   <br/>
                   <strong style="color: #363635;">${title}</strong>
                   <br/><br/>
