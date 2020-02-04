@@ -76,14 +76,13 @@ module.exports = ({ title, firstName, lastName }) => {
             <tbody
               style="
                 text-align: center;
-                color: #363635;
               "
             >
               <tr>  
-                <td
-                  style="color: #363635;"
-                >
-                  <strong>${firstName} ${lastName}</strong> a soumis(e) une participation au questionnaire <em><strong>${title}</strong></em>.
+                <td style="color: #363635;">
+                  <strong style="color: #363635;">${firstName} ${lastName}</strong> a soumis(e) une participation au questionnaire
+                  <br/>
+                  <strong style="color: #363635;">${title}</strong>
                   <br/><br/>
                   <a 
                     href="https://admin.rosebud.website/#/login" 

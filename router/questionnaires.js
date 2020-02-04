@@ -147,7 +147,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     to: email,
     subject: 'Rosebud - Ciclic | Merci pour votre participation',
     html: mailParticipation({
-      title: questionnaire.title,
+      firstName,
     }),
   });
   const mailCheck = await transporter.sendMail({
