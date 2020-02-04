@@ -150,7 +150,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
   });
   const mailCheck = await transporter.sendMail({
     from: 'me',
-    to: email,
+    to: process.env.MAIL_USER,
     subject: 'Rosebud - Ciclic | Une nouvelle participation a été soumise',
     html: mailModerate({ title: questionnaire.title, firstName, lastName }),
   });
