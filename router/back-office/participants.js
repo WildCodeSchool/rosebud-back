@@ -67,7 +67,6 @@ router.delete('/:id', async (req, res) => {
 // SEND MAIL PARTICIPATION APPROVED
 router.post('/:ParticipantId/approved', async (req, res) => {
   const { ParticipantId } = req.params;
-
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -77,15 +76,12 @@ router.post('/:ParticipantId/approved', async (req, res) => {
       pass: process.env.MAIL_PASS,
     },
   });
-
   const participant = await Participant.findOne({
     where: { id: ParticipantId },
   });
-
   const questionnaire = await Questionnaire.findOne({
     where: { id: participant.QuestionnaireId },
   });
-
   const mail = await transporter.sendMail({
     from: 'me',
     to: participant.email,
@@ -96,7 +92,6 @@ router.post('/:ParticipantId/approved', async (req, res) => {
       firstName: participant.firstName,
     }),
   });
-
   res.status(200).send({
     mail,
   });
