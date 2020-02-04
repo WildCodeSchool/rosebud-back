@@ -6,12 +6,18 @@ const router = express.Router();
 
 // GET ALL QUESTIONNAIRE
 router.get('/', isAuthenticated, async (req, res) => {
-  const { UserId } = req.query;
-  const { count } = await Questionnaire.findAndCountAll();
-  const questionnaire = await Questionnaire.findAll(UserId && { where: { UserId } });
+  const {
+    _start, _end, _order, _sort, UserId,
+  } = req.query;
+  const { count, rows } = await Questionnaire.findAndCountAll({
+    limit: _end - _start,
+    offset: Number(_start),
+    order: [[_sort, _order]],
+  });
+  await Questionnaire.findAll(UserId && { where: { UserId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
-  res.send(questionnaire);
+  res.send(rows);
 });
 
 // GET QUESTIONNAIRE BY ID
