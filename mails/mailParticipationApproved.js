@@ -82,8 +82,6 @@ module.exports = ({ QuestionnaireId, title, firstName }) => {
                 <td
                   style="color: #363635;"
                 >
-                  <strong style="color: #363635;">Bonjour ${firstName}, </strong>
-                  <br/><br/>
                   Vous avez récemment participé à Rosebud en remplissant le questionnaire
                   <br/>
                   <strong style="color: #363635;">${title}</strong>.
