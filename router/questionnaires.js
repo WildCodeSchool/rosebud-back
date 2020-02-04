@@ -3,8 +3,8 @@ const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
-const mailParticipation = require('./mailParticipation');
-const mailModerate = require('./mailModerate');
+const mailParticipation = require('./../mails/mailParticipation');
+const mailModerate = require('./../mails/mailModerate');
 
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
