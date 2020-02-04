@@ -1,4 +1,5 @@
 git pull
 npm install --only=production
 npm run sequelize db:migrate
-pm2 start npm start
+sequelize db:seed --seed 20200203085907-isPrivate.js
+pm2 start npm -- start

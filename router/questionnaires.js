@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
+
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
 } = require('../models');
@@ -11,33 +12,46 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads/');
   },
   filename(req, file, cb) {
-    cb(null, Date.now() + file.originalname);
+    cb(null, Date.now() + file.fieldname);
   },
 });
 const upload = multer({ storage });
 const router = express.Router();
+
+
 // GET RANDOM IMAGES
 router.get('/answers', async (req, res) => {
-  const { limit } = req.query;
-  const homeImages = await Answer.findAll({
-    attributes: ['id', 'image_url', 'ParticipantId'],
-    limit: limit && Number(limit),
-    order: [
-      Sequelize.fn('RAND'),
-    ],
-    include: [{
-      model: Participant,
-      where: { isApproved: true },
-    }],
-  });
+  const { limit, QuestionnaireId } = req.query;
+  const options = await {
+    hasJoin: true,
+    include: [{ model: Participant }],
+    type: sequelize.QueryTypes.SELECT,
+  };
+    // eslint-disable-next-line no-underscore-dangle
+  Answer._validateIncludedElements(options);
+  const homeImages = await sequelize.query(`
+    SELECT
+      a.image_url
+    FROM
+      Answers AS a
+      INNER JOIN Participants AS p ON  a.ParticipantId = p.id
+      INNER JOIN Questionnaires AS q ON p.QuestionnaireId = q.id
+    WHERE
+      p.QuestionnaireId = ${QuestionnaireId} AND p.isApproved = true AND q.isOnline = true AND q.isPrivate = false
+    ORDER BY RAND()
+    LIMIT ${limit}
+    `, options);
   res.send(homeImages);
 });
+
 // GET QUESTIONNAIRES
 router.get('/', async (req, res) => {
   const { query, offset, limit } = req.query;
   const questionnaires = await Questionnaire.findAll({
     where: {
       title: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${query}%`),
+      isOnline: true,
+      isPrivate: false,
     },
     offset: Number(offset),
     limit: Number(limit),
@@ -71,10 +85,11 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       .resize(800, 800, {
         fit: sharp.fit.inside,
         withoutEnlargement: true,
+        progressive: true,
       })
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/uploads/${file.filename}_small`);
+      .toFile(`public/uploads/${file.filename}_small.jpg`);
     fs.unlink(`public/uploads/${file.filename}`, (err) => {
       if (err) throw err;
     });
@@ -101,7 +116,8 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     } = req.body;
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
-      .path.replace('public/uploads', '/uploads').concat('', '_small');
+      .path.replace('public/uploads', '/uploads').concat('', '_small.jpg');
+    console.log(imageUrl);
     answers.push(
       Answer.create({
         comment,
@@ -158,7 +174,7 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
     ) AS p 
     LEFT JOIN Answers AS a
     ON a.ParticipantId = p.id
-    ORDER BY a.QuestionId ASC;
+    ORDER BY a.QuestionId ASC, updatedAt DESC ;
   `, options);
   res.send({
     questionnaires, questions, participants,
