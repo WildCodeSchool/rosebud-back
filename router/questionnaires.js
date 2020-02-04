@@ -2,10 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs');
-const nodemailer = require("nodemailer");
-const path = require('path')
-const mailParticipation = require('./mailParticipation')
-const mailModerate = require('./mailModerate')
+const nodemailer = require('nodemailer');
+const mailParticipation = require('./mailParticipation');
+const mailModerate = require('./mailModerate');
 
 const {
   Questionnaire, Answer, Image, Question, Participant, sequelize, Sequelize,
@@ -69,6 +68,7 @@ router.get('/:id', async (req, res) => {
   const questionnaires = await Questionnaire.findAll({ where: { id } });
   res.send(questionnaires);
 });
+
 // GET QUESTIONS BY QUESTIONNAIRE
 router.get('/:QuestionnaireId/questions', async (req, res) => {
   const { QuestionnaireId } = req.params;
@@ -81,9 +81,9 @@ router.get('/:QuestionnaireId/questions', async (req, res) => {
   });
   res.send(questions);
 });
+
 // POST PARTICIPATION BY QUESTIONNAIRE
 router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) => {
-  console.log(req.files);
   req.files.map(async (file) => {
     await sharp(file.path)
       .resize(800, 800, {
@@ -99,7 +99,7 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     });
   });
   const {
-    firstName, lastName, status, age, city, email, questionsLength, 
+    firstName, lastName, status, age, city, email, questionsLength,
   } = req.body;
   const { QuestionnaireId } = req.params;
   const participant = await Participant.create({
@@ -111,8 +111,6 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     email,
     QuestionnaireId,
   });
-
-  
   const answers = [];
   for (let i = 0; i < questionsLength; i += 1) {
     const {
@@ -123,7 +121,6 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
     const imageUrl = imageSelect || req.files
       .find(({ fieldname }) => fieldname === `answerImage${i}`)
       .path.replace('public/uploads', '/uploads').concat('', '_small.jpg');
-    console.log(imageUrl);
     answers.push(
       Answer.create({
         comment,
@@ -133,41 +130,38 @@ router.post('/:QuestionnaireId/participations', upload.any(), async (req, res) =
       }),
     );
   }
-
   const answersResult = await Promise.all(answers);
-
-  const questionnaire = await Questionnaire.findOne({ where:{ id:QuestionnaireId }});
-
-  console.log(questionnaire.title)
-
-  //const readStream = fs.createReadStream(path.resolve(__dirname, 'index.html'));
-
+  const questionnaire = await Questionnaire.findOne({ where: { id: QuestionnaireId } });
+  // const readStream = fs.createReadStream(path.resolve(__dirname, 'index.html'));
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS
-    }
+      pass: process.env.MAIL_PASS,
+    },
+  });
+  const mail = await transporter.sendMail({
+    from: 'me',
+    to: email,
+    subject: 'Rosebud - Ciclic | Merci pour votre participation',
+    html: mailParticipation({
+      title: questionnaire.title,
+    }),
+  });
+  const mailCheck = await transporter.sendMail({
+    from: 'me',
+    to: email,
+    subject: 'Rosebud - Ciclic | Une nouvelle participation a été soumise',
+    html: mailModerate({ title: questionnaire.title, firstName, lastName }),
   });
 
-  const mail = await transporter.sendMail({
-    from: "me",
-    to: email,
-    subject: "merci pour votre participation",
-    html: mailParticipation()
-  })
-
-  const mailCheck = await transporter.sendMail({
-    from:"me",
-    to: email,
-    subject:"une nouvelle participation a été soumise",
-    html: mailModerate({ title:questionnaire.title })
-  })
-    
-  res.status(200).send({ participant, answersResult, mail, mailCheck });
+  res.status(200).send({
+    participant, answersResult, mail, mailCheck,
+  });
 });
+
 // GET Questions & Answers on WALLPAGE
 router.get('/:QuestionnaireId/participations', async (req, res) => {
   const { QuestionnaireId } = req.params;
