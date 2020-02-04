@@ -15,5 +15,5 @@ jobs:
           sshpass -p ${{secrets.SSH_PASS}} ssh \
           ${{secrets.SSH_USER }}@${{secrets.SSH_HOST}} \
           -o StrictHostKeyChecking=no \
-          "bash -s" ./deploy.sh
+          "bash -s" < ./deploy.sh
 
