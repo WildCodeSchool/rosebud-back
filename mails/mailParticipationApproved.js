@@ -82,13 +82,13 @@ module.exports = ({ QuestionnaireId, title, firstName }) => {
                 <td
                   style="color: #363635;"
                 >
-                  Bonjour ${firstName}, 
-                  <br/>
+                  <strong style="color: #363635;">Bonjour ${firstName}, </strong>
+                  <br/><br/>
                   Vous avez récemment participé à Rosebud en remplissant le questionnaire
                   <br/>
                   <strong style="color: #363635;">${title}</strong>.
                   <br/><br/>
-                  <strongstyle="color: #363635;">Vos réponses sont désormais en ligne !</strong>
+                  <strong style="color: #363635;">Vos réponses sont désormais en ligne !</strong>
                   <br/><br/>
                   <a 
                     href="https://rosebud.website/questionnaires/${QuestionnaireId}" 
