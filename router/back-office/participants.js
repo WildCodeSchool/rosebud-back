@@ -8,23 +8,16 @@ const router = express.Router();
 
 // GET ALL PARTICIPANTS
 router.get('/', isAuthenticated, async (req, res) => {
-  const {
-    _start, _end, _order, _sort,
-  } = req.query;
   const { QuestionnaireId, status, isApproved } = req.query;
-  const { count, rows } = await Participant.findAndCountAll({
-    limit: _end - _start,
-    offset: Number(_start),
-    order: [[_sort, _order]],
-  });
-  await Participant.findAll(
+  const { count } = await Participant.findAndCountAll();
+  const participants = await Participant.findAll(
     (QuestionnaireId && { where: { QuestionnaireId } })
     || (status && { where: { status } })
     || (isApproved && { where: { isApproved } }),
   );
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
-  res.send(rows);
+  res.send(participants);
 });
 
 // GET PARTICIPANT BY ID
