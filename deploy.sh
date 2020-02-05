@@ -1,3 +1,4 @@
+cd /var/www/rosebud-back
 git pull
 npm install --only=production
 npm run sequelize db:migrate
