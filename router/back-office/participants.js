@@ -1,6 +1,8 @@
 const express = require('express');
-const { Participant } = require('../../models');
+const nodemailer = require('nodemailer');
+const { Participant, Questionnaire } = require('../../models');
 const { isAuthenticated } = require('../../utils/jwt.utils');
+const mailParticipationApproved = require('../../mails/mailParticipationApproved');
 
 const router = express.Router();
 
@@ -60,6 +62,39 @@ router.delete('/:id', async (req, res) => {
     .then(() => {
       res.json({ status: 'Participant Deleted!' });
     });
+});
+
+// SEND MAIL PARTICIPATION APPROVED
+router.post('/:ParticipantId/approved', async (req, res) => {
+  const { ParticipantId } = req.params;
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+  const participant = await Participant.findOne({
+    where: { id: ParticipantId },
+  });
+  const questionnaire = await Questionnaire.findOne({
+    where: { id: participant.QuestionnaireId },
+  });
+  const mail = await transporter.sendMail({
+    from: 'me',
+    to: participant.email,
+    subject: 'Rosebud - Ciclic | Votre participation est en ligne',
+    html: mailParticipationApproved({
+      QuestionnaireId: questionnaire.id,
+      title: questionnaire.title,
+      firstName: participant.firstName,
+    }),
+  });
+  res.status(200).send({
+    mail,
+  });
 });
 
 module.exports = router;

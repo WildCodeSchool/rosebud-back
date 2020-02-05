@@ -6,12 +6,18 @@ const router = express.Router();
 
 // GET ALL QUESTIONNAIRE
 router.get('/', isAuthenticated, async (req, res) => {
-  const { UserId } = req.query;
-  const { count } = await Questionnaire.findAndCountAll();
-  const questionnaire = await Questionnaire.findAll(UserId && { where: { UserId } });
+  const {
+    _start, _end, _order, _sort, UserId,
+  } = req.query;
+  const { count, rows } = await Questionnaire.findAndCountAll({
+    limit: _end - _start,
+    offset: Number(_start),
+    order: [[_sort, _order]],
+  });
+  await Questionnaire.findAll(UserId && { where: { UserId } });
   res.header('Access-Control-Expose-Headers', 'X-Total-Count');
   res.header('X-Total-Count', count);
-  res.send(questionnaire);
+  res.send(rows);
 });
 
 // GET QUESTIONNAIRE BY ID
@@ -24,10 +30,10 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 // CREATE QUESTIONNAIRE
 router.post('/', isAuthenticated, async (req, res) => {
   const {
-    title, participationText, presentationText, UserId, isOnline,
+    title, participationText, presentationText, UserId, isOnline, isPrivate,
   } = req.body;
   await Questionnaire.create({
-    title, participationText, presentationText, UserId, isOnline,
+    title, participationText, presentationText, UserId, isOnline, isPrivate,
   })
     .then(() => {
       res.json({ status: 'Questionnaire Created!' });
@@ -38,12 +44,12 @@ router.post('/', isAuthenticated, async (req, res) => {
 // PUT QUESTIONNAIRE
 router.put('/:id', isAuthenticated, async (req, res) => {
   const {
-    title, participationText, presentationText, isOnline,
+    title, participationText, presentationText, isOnline, isPrivate,
   } = req.body;
 
   await Questionnaire.update(
     {
-      title, participationText, presentationText, isOnline,
+      title, participationText, presentationText, isOnline, isPrivate,
     },
     { where: { id: req.params.id } },
   )

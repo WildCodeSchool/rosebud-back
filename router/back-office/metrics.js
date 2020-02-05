@@ -1,5 +1,7 @@
 const express = require('express');
-const { Questionnaire, Answer, Participant } = require('../../models');
+const {
+  Questionnaire, Question, Answer, Participant,
+} = require('../../models');
 
 const router = express.Router();
 
@@ -12,6 +14,13 @@ router.get('/answers', async (req, res) => {
 // GET QUESTIONNAIRES COUNTER
 router.get('/questionnaires', async (req, res) => {
   const questionnairesCounter = await Questionnaire.count();
+  res.send(String(questionnairesCounter));
+});
+
+// GET QUESTIONS COUNTER BY QUESTIONNAIRE
+router.get('/questions/:QuestionnaireId', async (req, res) => {
+  const { QuestionnaireId } = req.params;
+  const questionnairesCounter = await Question.count({ where: { QuestionnaireId } });
   res.send(String(questionnairesCounter));
 });
 
