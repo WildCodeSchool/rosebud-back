@@ -1,23 +1,51 @@
-'use strict';
-
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    /*
-      Add altering commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.createTable('users', { id: Sequelize.INTEGER });
-    */
-  },
-
-  down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.dropTable('users');
-    */
-  }
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Questionnaires', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER,
+    },
+    title: {
+      allowNull: false,
+      type: Sequelize.STRING,
+    },
+    participationText: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    presentationText: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    UserId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
+    },
+    isOnline: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    isPrivate: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    createdAt: {
+      allowNull: false,
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+    },
+    updatedAt: {
+      allowNull: false,
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+    },
+  }),
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Questionnaires'),
 };

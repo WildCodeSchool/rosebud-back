@@ -1,22 +1,36 @@
+
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Questionnaires', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    username: {
+    title: {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    email: {
-      allowNull: false,
+    participationText: {
+      allowNull: true,
       type: Sequelize.STRING,
     },
-    password: {
-      allowNull: false,
+    presentationText: {
+      allowNull: true,
       type: Sequelize.STRING,
+    },
+    UserId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
+    },
+    isOnline: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
     createdAt: {
       allowNull: false,
@@ -29,5 +43,5 @@ module.exports = {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
     },
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users'),
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Questionnaires'),
 };

@@ -1,3 +1,4 @@
+
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Questionnaires', {
     id: {
@@ -27,11 +28,6 @@ module.exports = {
       },
     },
     isOnline: {
-      allowNull: false,
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    },
-    isPrivate: {
       allowNull: false,
       type: Sequelize.BOOLEAN,
       defaultValue: false,
