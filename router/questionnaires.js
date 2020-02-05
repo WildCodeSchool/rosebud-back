@@ -166,7 +166,6 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
   const {
     status, city, name, limit, offset,
   } = req.query;
-  const questionnaires = await Questionnaire.findAll({ where: { id: QuestionnaireId } });
   const questions = await Question.findAll({ where: { QuestionnaireId } });
   const options = await {
     hasJoin: true,
@@ -199,15 +198,16 @@ router.get('/:QuestionnaireId/participations', async (req, res) => {
          ${status !== 'all' ? 'AND status = :status' : ' AND status IS NOT NULL '}
          ${city !== 'all' ? 'AND LOWER(city) LIKE :city' : ' AND city IS NOT NULL '}
          ${name !== 'all' ? 'AND LOWER(lastName) LIKE :name' : ' AND lastName IS NOT NULL '}
+      ORDER BY Participants.id DESC
       LIMIT :limit
       OFFSET :offset
     ) AS p 
     LEFT JOIN Answers AS a
     ON a.ParticipantId = p.id
-    ORDER BY a.QuestionId ASC, updatedAt DESC ;
+    ORDER BY p.id DESC, a.QuestionId;
   `, options);
   res.send({
-    questionnaires, questions, participants,
+    questions, participants,
   });
 });
 module.exports = router;
